@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobile_20_08/features/Home/HomeScreen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../common/horizontalScroll.dart';
 import '../common/theme.dart';
 
 class MyApp extends StatelessWidget {
@@ -13,6 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'My App Flutter',
       theme: ThemeData(),
+      scrollBehavior: MyCustomScrollBehavior(),
       // supportedLocales: const [
       //   Locale('en', ''),
       //   Locale('vi', ''),

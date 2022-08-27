@@ -4,6 +4,7 @@ import 'package:flutter_mobile_20_08/store/models/luxuryProduct.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../store/data/products.dart';
+import 'DrawerApp.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -29,26 +30,23 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   final List<LuxuryProduct> luxuryProduct = listLuxuryPerfumeProduct;
-  FaIcon iconHeart =
-      FaIcon(FontAwesomeIcons.heart, size: 20, color: primaryDarkColor);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
-          actions: [
-            IconButton(
-              padding: const EdgeInsets.only(right: 20.0),
-              icon: Icon(Icons.shopping_bag_outlined,
-                  size: 26, color: primaryColor),
-              onPressed: null,
-            )
-          ],
-          leading: IconButton(
-            icon: Icon(Icons.menu, size: 26, color: primaryColor),
+        elevation: 0,
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color: primaryColor),
+        actions: [
+          IconButton(
+            padding: const EdgeInsets.only(right: 20.0),
+            icon: Icon(Icons.shopping_bag_outlined,
+                size: 26, color: primaryColor),
             onPressed: null,
-          )),
+          )
+        ],
+      ),
+      drawer: const DrawerApp(),
       body: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -278,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           Expanded(
             child: Container(
-              margin: const EdgeInsets.all(10),
+              margin: const EdgeInsets.only(top: 10, right: 4.0, left: 10),
               child: Column(
                 children: [
                   Container(
@@ -323,19 +321,23 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         InkWell(
-                          onTap: () {
-                            setState(() {
-                              (iconHeart ==
-                                      FaIcon(FontAwesomeIcons.solidHeart,
-                                          size: 20, color: primaryDarkColor))
-                                  ? FaIcon(FontAwesomeIcons.heart,
-                                      size: 20, color: primaryDarkColor)
-                                  : FaIcon(FontAwesomeIcons.solidHeart,
-                                      size: 20, color: primaryDarkColor);
-                            });
-                          },
-                          child: iconHeart,
-                        )
+                            onTap: () {
+                              print(luxuryProduct.isLiked);
+                              setState(() {
+                                (luxuryProduct.isLiked)
+                                    ? (luxuryProduct.isLiked = false)
+                                    : (luxuryProduct.isLiked = true);
+                              });
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              child: (luxuryProduct.isLiked)
+                                  ? FaIcon(FontAwesomeIcons.solidHeart,
+                                      color: Colors.red[800], size: 20)
+                                  : FaIcon(FontAwesomeIcons.heart,
+                                      color: primaryWhiteColor, size: 20),
+                            ))
                       ],
                     ),
                   )

@@ -13,6 +13,7 @@ class LuxuryProduct {
   final int liquidVolume;
   final double rateStar;
   final int quantityPurchased;
+  late bool isLiked;
 
   LuxuryProduct({
     required this.id,
@@ -27,5 +28,6 @@ class LuxuryProduct {
     required this.liquidVolume,
     required this.rateStar,
     required this.quantityPurchased,
+    required this.isLiked,
   });
 }

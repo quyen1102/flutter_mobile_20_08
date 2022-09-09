@@ -4,6 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../common/horizontalScroll.dart';
 import '../common/theme.dart';
+import 'Home/demoSceen/scrollToIndex.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);

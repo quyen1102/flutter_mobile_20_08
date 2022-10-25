@@ -88,8 +88,10 @@ class _AppContentState extends State<AppContent> {
           _renderBarButton(
             0,
             'Home',
-            FaIcon(FontAwesomeIcons.house, color: colorOrigin, size: 24),
-            FaIcon(FontAwesomeIcons.house, color: colorActive, size: 26),
+            // Icon(Icons.home_filled , color: colorOrigin, size: 24),
+            // Icon(Icons.home_outlined , color: colorOrigin, size: 24),
+            FaIcon(FontAwesomeIcons.house, color: colorOrigin, size: 22),
+            FaIcon(FontAwesomeIcons.house, color: colorActive, size: 24),
           ),
           _renderBarButton(
             1,
@@ -127,7 +129,7 @@ class _AppContentState extends State<AppContent> {
           )
         : const Text('');
 
-    FaIcon currentIcon = index == selectedIndex ? activeIcon : icon;
+    final Widget  currentIcon = index == selectedIndex ? activeIcon : icon;
 
     return Expanded(
       flex: 1,

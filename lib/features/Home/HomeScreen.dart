@@ -4,6 +4,7 @@ import 'package:flutter_mobile_20_08/store/models/luxuryProduct.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../store/data/products.dart';
+import '../products/detailProductScreen.dart';
 import 'DrawerApp.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -181,68 +182,77 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _renderProductItem(LuxuryProduct product) {
-    return Container(
-      height: 300,
-      width: 160,
-      margin: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        children: [
-          Container(
-            height: 260,
-            width: 160,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              image: DecorationImage(
-                  image: AssetImage(product.image), fit: BoxFit.cover),
-            ),
-          ),
-          Container(
-            alignment: Alignment.topLeft,
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: Text(
-              product.name,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 18,
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
+    return InkWell(
+      onTap: () {
+        _gotoProductDetailScreen(product);
+      },
+      child: Container(
+        height: 300,
+        width: 160,
+        margin: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          children: [
+            Container(
+              height: 260,
+              width: 160,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                image: DecorationImage(
+                    image: AssetImage(product.image), fit: BoxFit.cover),
               ),
             ),
-          ),
-          Container(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  "\$${product.currentPrice.toString()}",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xffE5AA63),
-                    fontWeight: FontWeight.w500,
-                  ),
+            Container(
+              alignment: Alignment.topLeft,
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Text(
+                product.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 18,
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
                 ),
-                Text(
-                  "\$${product.lastPrice.toString()}",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    decoration: TextDecoration.lineThrough,
-                    fontSize: 16,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
+              ),
             ),
-          )
-        ],
+            _renderPrice(product),
+          ],
+        ),
       ),
     );
   }
 
+  _renderPrice(product){
+    return   Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Text(
+            "\$${product.currentPrice.toString()}",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Color(0xffE5AA63),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          Text(
+            "\$${product.lastPrice.toString()}",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              decoration: TextDecoration.lineThrough,
+              fontSize: 16,
+              color: Colors.black54,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+
+  }
   _renderListItemRecentProduct(List<LuxuryProduct> luxuryProducts) {
     List<Widget> list = [];
     for (var i = 0; i < luxuryProducts.length; i++) {
@@ -252,100 +262,105 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   _renderRecentProductItem(LuxuryProduct luxuryProduct) {
-    return Container(
-      height: 120,
-      width: MediaQuery.of(context).size.width,
-      margin: const EdgeInsets.symmetric(vertical: 10),
-      decoration: BoxDecoration(
-        color: primaryLightColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Container(
-            height: 120,
-            width: 100,
-            margin: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              image: DecorationImage(
-                image: AssetImage(luxuryProduct.image),
-                fit: BoxFit.cover,
+    return InkWell(
+      onTap: (){
+        _gotoProductDetailScreen(luxuryProduct);
+      },
+      child: Container(
+        height: 120,
+        width: MediaQuery.of(context).size.width,
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: primaryLightColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            Container(
+              height: 120,
+              width: 100,
+              margin: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: AssetImage(luxuryProduct.image),
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.only(top: 10, right: 4.0, left: 10),
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    alignment: Alignment.topLeft,
-                    child: Text(
-                      luxuryProduct.name,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: primaryDarkColor,
-                        fontWeight: FontWeight.bold,
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.only(top: 10, right: 4.0, left: 10),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        luxuryProduct.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: primaryDarkColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  _renderNumberStar(luxuryProduct.rateStar),
-                  Expanded(child: Container()),
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          "\$${luxuryProduct.currentPrice.toString()}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Color(0xffE5AA63),
-                            fontWeight: FontWeight.w500,
+                    _renderNumberStar(luxuryProduct.rateStar),
+                    Expanded(child: Container()),
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Text(
+                            "\$${luxuryProduct.currentPrice.toString()}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Color(0xffE5AA63),
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        Text(
-                          "\$${luxuryProduct.lastPrice.toString()}",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(
-                            decoration: TextDecoration.lineThrough,
-                            fontSize: 16,
-                            color: Colors.black54,
-                            fontWeight: FontWeight.w500,
+                          Text(
+                            "\$${luxuryProduct.lastPrice.toString()}",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              decoration: TextDecoration.lineThrough,
+                              fontSize: 16,
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        InkWell(
-                            onTap: () {
-                              print(luxuryProduct.isLiked);
-                              setState(() {
-                                (luxuryProduct.isLiked)
-                                    ? (luxuryProduct.isLiked = false)
-                                    : (luxuryProduct.isLiked = true);
-                              });
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 16, vertical: 10),
-                              child: (luxuryProduct.isLiked)
-                                  ? FaIcon(FontAwesomeIcons.solidHeart,
-                                      color: Colors.red[800], size: 20)
-                                  : FaIcon(FontAwesomeIcons.heart,
-                                      color: primaryWhiteColor, size: 20),
-                            ))
-                      ],
-                    ),
-                  )
-                ],
+                          InkWell(
+                              onTap: () {
+                                print(luxuryProduct.isLiked);
+                                setState(() {
+                                  (luxuryProduct.isLiked)
+                                      ? (luxuryProduct.isLiked = false)
+                                      : (luxuryProduct.isLiked = true);
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 10),
+                                child: (luxuryProduct.isLiked)
+                                    ? FaIcon(FontAwesomeIcons.solidHeart,
+                                        color: Colors.red[800], size: 20)
+                                    : FaIcon(FontAwesomeIcons.heart,
+                                        color: primaryWhiteColor, size: 20),
+                              ))
+                        ],
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -379,6 +394,13 @@ class _HomeScreenState extends State<HomeScreen> {
     ));
     return Row(
       children: listStar,
+    );
+  }
+
+  void _gotoProductDetailScreen(LuxuryProduct product) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => DetailProductScreen(product: product,))
     );
   }
 }

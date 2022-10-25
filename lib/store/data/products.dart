@@ -20,8 +20,8 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
   ),
   LuxuryProduct(
     id: 2,
-    name: "Promio body lotion",
-    brandName: "SkinCeuticals",
+    name: "Nước hoa nhài",
+    brandName: "Thiên thanh",
     image: "assets/images/product_02.jpg",
     currentPrice: 22.99,
     lastPrice: 49.99,

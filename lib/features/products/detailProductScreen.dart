@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:readmore/readmore.dart';
@@ -18,6 +19,9 @@ class DetailProductScreen extends StatefulWidget {
 
 class _DetailProductScreenState extends State<DetailProductScreen> {
   final List<LuxuryProduct> listProduct = listLuxuryPerfumeProduct;
+  double _totalPrice = 0;
+  int _currentSliderIndex = 0;
+  int _initNumberProduct = 0;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -27,20 +31,65 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
         _renderSliverAppBarr(size, widget.product),
         SliverToBoxAdapter(child: _renderBody(size, widget.product)),
         SliverToBoxAdapter(child: renderCarouselSlider(context)),
-        const SliverToBoxAdapter(
-          child: SizedBox(height: 30),
-        )
+        const SliverToBoxAdapter( child: SizedBox(height: 30))
       ],
-    ));
+    ),
+      bottomNavigationBar: _renderBottomNavigationBar() ,
+    );
   }
 
+  _renderBottomNavigationBar(){
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width: 150,
+            height: 50,
+            child: Column(
+              children:  [
+                const Text("Total price", style: TextStyle(color: Colors.black54, fontSize: 15)),
+                (_totalPrice > 0)
+                    ? Text("\$${_totalPrice.toStringAsFixed(2)}",  style: TextStyle(color: primarySuperDarkColor, fontSize: 20, fontWeight: FontWeight.bold))
+                    : Text("- -  - -",  style: TextStyle(color: primarySuperDarkColor, fontSize: 22))
+              ],
+            ),
+          ),
+          ElevatedButton.icon(
+            onPressed: _onPressAddToCart,
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 26),
+              primary: primaryColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius:  BorderRadius.circular(30.0)
+              ),
+              elevation: 0,
+              onPrimary: Colors.white,
+              textStyle:const  TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+              ),
+            ),
+            label: const Text('Add to Cart'),
+            icon: const Icon(Icons.shopping_bag_outlined,  size: 24, color: Colors.white,),
+          ),
+
+        ],
+      ),
+    );
+  }
+  _onPressAddToCart(){
+
+  }
   _renderSliverAppBarr(size, product) {
     return SliverAppBar(
       pinned: true,
       leadingWidth: double.infinity,
       actions: [
         IconButton(
-            icon: const Icon(Icons.home, color: Colors.white),
+            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
             onPressed: () {
               Navigator.of(context).pop();
             }),
@@ -94,7 +143,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image:AssetImage('${image}'),
+              image:AssetImage('$image'),
               fit: BoxFit.cover,
             ),
           ),
@@ -138,19 +187,32 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
             ),
           ),
           _renderPriceAndRateStar(product),
+          _renderCountProduct(widget.product),
+          Divider(
+            color: primaryDarkColor,
+            height: 1,
+            thickness: 0.5,
+          ),
           const SizedBox(height: 16),
           _renderContent("Description", product.description),
           _renderContent("Instructions for use", product.useType),
+          const SizedBox(height: 16),
+          Divider(
+            color: primaryDarkColor,
+            height: 1,
+            thickness: 0.5,
+          ),
         ],
       ),
     );
   }
+
   _renderContent(String title, String content){
     return Column(
       children: [
         Container(
           alignment: Alignment.topLeft,
-          padding: EdgeInsets.symmetric(vertical:10),
+          padding: const  EdgeInsets.symmetric(vertical:10),
           child: Text(
           title,
           style:  TextStyle(
@@ -159,25 +221,24 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
             fontWeight: FontWeight.bold,
           )
         ),),
-        Container(
-           child: ReadMoreText(
-             content,
-              trimLines: 3,
-             textAlign: TextAlign.justify,
-              style: TextStyle(
-                fontSize: 16,
-                height: 1.6,
-              ),
-              colorClickableText: primaryOrangeColor,
-              trimMode: TrimMode.Line,
-              trimCollapsedText: 'Read more',
-              trimExpandedText: 'Show less',
-              moreStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-            ),
-        ),
+        ReadMoreText(
+          content,
+           trimLines: 3,
+          textAlign: TextAlign.justify,
+           style: const  TextStyle(
+             fontSize: 16,
+             height: 1.6,
+           ),
+           colorClickableText: primaryOrangeColor,
+           trimMode: TrimMode.Line,
+           trimCollapsedText: 'Read more',
+           trimExpandedText: 'Show less',
+           moreStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+         ),
       ],
     );
   }
+
   _renderNumberStar(rateStar) {
     int numberStartStroke = (5 - rateStar).toInt();
 
@@ -209,57 +270,56 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
       children: listStar,
     );
   }
+
   _renderPriceAndRateStar(LuxuryProduct product){
-    return   Container(
-      child: Row(
-
-        children: [
-          Expanded(
-            flex: 1,
-            child: SizedBox(
-              child:  _renderNumberStar(product.rateStar),
-            ),
+    return   Row(
+      children: [
+        Expanded(
+          flex: 1,
+          child: SizedBox(
+            child:  _renderNumberStar(product.rateStar),
           ),
-          Expanded(
-            flex: 1,
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  "\$${product.lastPrice.toString()}",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    decoration: TextDecoration.lineThrough,
-                    fontSize: 16,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w500,
-                  ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Text(
+                "\$${product.lastPrice.toString()}",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  decoration: TextDecoration.lineThrough,
+                  fontSize: 16,
+                  color: Colors.black54,
+                  fontWeight: FontWeight.w500,
                 ),
-                Text(
-                  "\$${product.currentPrice.toString()}",
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Color(0xffE5AA63),
-                    fontWeight: FontWeight.w500,
-                  ),
+              ),
+              Text(
+                "\$${product.currentPrice.toString()}",
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Color(0xffE5AA63),
+                  fontWeight: FontWeight.w500,
                 ),
-              ]
-            ),
+              ),
+            ]
           ),
+        ),
 
-        ],
-      ),
+      ],
     );
 
   }
-  int _currentSliderIndex = 0;
+
+
   renderCarouselSlider(BuildContext context) {
     return Container(
       height: 550,
-      decoration: BoxDecoration(
+      decoration: const  BoxDecoration(
         color: Colors.white,
       ),
       child: Column(
@@ -282,9 +342,9 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
               initialPage: 0,
               enableInfiniteScroll: true,
               reverse: false,
-              // autoPlay: true,
-              autoPlayInterval: Duration(seconds: 5),
-              autoPlayAnimationDuration: Duration(milliseconds: 2000),
+              autoPlay: true,
+              autoPlayInterval:const   Duration(seconds: 5),
+              autoPlayAnimationDuration:const  Duration(milliseconds: 2000),
               autoPlayCurve: Curves.fastOutSlowIn,
               enlargeCenterPage: true,
               onPageChanged: (int i, CarouselPageChangedReason reason) {
@@ -306,6 +366,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
       ),
     );
   }
+
   _renderTitle(text) {
     return Container(
       alignment: Alignment.topLeft,
@@ -320,6 +381,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
       ),
     );
   }
+
   _renderItemProduct(LuxuryProduct product) {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
@@ -328,7 +390,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
       onTap: () {
         _gotoProductDetailScreen(product);
       },
-      child: Container(
+      child: SizedBox(
         height: 400,
         width: width,
         // margin: const EdgeInsets.symmetric(horizontal: 10),
@@ -382,6 +444,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
       ),
     );
   }
+
   _btnSeeMore() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical:10),
@@ -396,42 +459,113 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
       ),
     );
   }
+
   _renderPrice(product){
-    return   Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Text(
-            "\$${product.currentPrice.toString()}",
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Color(0xffE5AA63),
-              fontWeight: FontWeight.w500,
-            ),
+    return   Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Text(
+          "\$${product.currentPrice.toString()}",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Color(0xffE5AA63),
+            fontWeight: FontWeight.w500,
           ),
-          const SizedBox(width: 16),
-          Text(
-            "\$${product.lastPrice.toString()}",
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              decoration: TextDecoration.lineThrough,
-              fontSize: 16,
-              color: Colors.black54,
-              fontWeight: FontWeight.w500,
-            ),
+        ),
+        const SizedBox(width: 16),
+        Text(
+          "\$${product.lastPrice.toString()}",
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(
+            decoration: TextDecoration.lineThrough,
+            fontSize: 16,
+            color: Colors.black54,
+            fontWeight: FontWeight.w500,
           ),
-        ],
-      ),
+        ),
+      ],
     );
 
   }
+
   void _gotoProductDetailScreen(LuxuryProduct product) {
     Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => DetailProductScreen(product: product,))
     );
   }
+
+
+  _renderCountProduct(LuxuryProduct product) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical:10, horizontal:26),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          _renderBtnHandleCount(_reduceProduct, "-"),
+          _renderViewNumberCount(),
+          _renderBtnHandleCount(_addProduct, "+"),
+
+        ],
+      ),
+    );
+  }
+
+  _renderViewNumberCount(){
+    return Container(
+      width: 50,
+      height: 20,
+      alignment: Alignment.center,
+      child: Text(_initNumberProduct.toString(),
+        style:const TextStyle(
+          fontSize: 18,
+          color: Colors.black,
+        )
+      ),
+    );
+  }
+
+  _renderBtnHandleCount( onTap, String handleType ){
+    return  InkWell(
+        onTap: onTap,
+        child: Container(
+            height: 35,
+            width: 35,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: primaryLightColor.withOpacity(0.5),
+              borderRadius: BorderRadius.circular(10.0),
+              border: Border.all(color: primaryColor, width:1),
+            ),
+            child: Text(
+              handleType,
+              style: TextStyle(
+                fontSize: 20,
+                color: primaryDarkColor,
+              ),
+            )
+        )
+    );
+  }
+
+  _addProduct(){
+    setState(() {
+      if(_initNumberProduct < 10){
+        _initNumberProduct++;
+        _totalPrice = _initNumberProduct * widget.product.currentPrice;
+      }
+    });
+  }
+
+  _reduceProduct(){
+    setState(() {
+      if(_initNumberProduct > 0){
+        _initNumberProduct--;
+        _totalPrice = _initNumberProduct * widget.product.currentPrice;
+      }});
+  }
+
 }

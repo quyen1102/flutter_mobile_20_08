@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobile_20_08/features/Home/HomeScreen.dart';
+import 'package:flutter_mobile_20_08/store/data/products.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:search_page/search_page.dart';
 
 import '../common/horizontalScroll.dart';
 import '../common/theme.dart';
+import '../store/models/luxuryProduct.dart';
 import 'Home/demoSceen/scrollToIndex.dart';
 
 class MyApp extends StatelessWidget {
@@ -38,6 +41,7 @@ class _AppContentState extends State<AppContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: renderFloatingBtnSearch(),
       body: Container(
         decoration: BoxDecoration(
           color: primaryWhiteColor,
@@ -72,6 +76,17 @@ class _AppContentState extends State<AppContent> {
   renderSearch() {}
 
   renderProfiles() {}
+
+  renderFloatingBtnSearch() {
+    return FloatingActionButton(
+      hoverColor: primaryColor,
+      child: Container(child: Icon(Icons.search)),
+      tooltip: 'Search products',
+      onPressed: () {
+        _searchAction();
+      },
+    );
+  }
 
   renderBottomNavigationBar(BuildContext context) {
     var colorOrigin = primaryColor;
@@ -131,7 +146,7 @@ class _AppContentState extends State<AppContent> {
           )
         : const Text('');
 
-    final Widget  currentIcon = index == selectedIndex ? activeIcon : icon;
+    final Widget currentIcon = index == selectedIndex ? activeIcon : icon;
 
     return Expanded(
       flex: 1,
@@ -169,5 +184,112 @@ class _AppContentState extends State<AppContent> {
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  _searchAction() {
+    showSearch(
+        context: context,
+        delegate: SearchPage<LuxuryProduct>(
+
+          onQueryUpdate: print,
+          items: listLuxuryPerfumeProduct,
+          searchLabel: 'Tìm kiếm',
+
+          // searchStyle: TextStyle(),
+          suggestion: Center(
+            // child: Text('Test'),
+            child: ListView.builder(
+                itemCount: listLuxuryPerfumeProduct.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final LuxuryProduct = listLuxuryPerfumeProduct[index];
+                  return ListTile(
+                    selectedColor: primaryColor,
+                    leading: Container(
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(LuxuryProduct.image),
+                              fit: BoxFit.cover)),
+                    ),
+                    title: Text(LuxuryProduct.name),
+                    subtitle: Text(
+                      LuxuryProduct.description,
+                      textAlign: TextAlign.start,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: Text(LuxuryProduct.currentPrice.toString()),
+                    isThreeLine: true,
+                  );
+                }),
+          ),
+          failure: const Center(
+            child: Text('No product found :('),
+          ),
+          filter: (luxuryProduct) => [
+            luxuryProduct.name,
+            luxuryProduct.description,
+            luxuryProduct.scent.toString(),
+          ],
+          // sort: (a, b) => a.compareTo(b),
+          builder: (LuxuryProduct) => Container(
+            child: ListTile(
+              selectedColor: primaryColor,
+              leading: Container(
+                height: 60,
+                width: 60,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(LuxuryProduct.image),
+                        fit: BoxFit.cover)),
+              ),
+              title: Text(LuxuryProduct.name),
+              subtitle: Text(
+                LuxuryProduct.description,
+                textAlign: TextAlign.start,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: Text(LuxuryProduct.currentPrice.toString()),
+              isThreeLine: true,
+            ),
+          ),
+        ));
+  }
+}
+
+class Product extends StatelessWidget {
+  const Product({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: ListView.builder(
+                itemCount: listLuxuryPerfumeProduct.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final LuxuryProduct = listLuxuryPerfumeProduct[index];
+                  return ListTile(
+                    selectedColor: primaryColor,
+                    leading: Container(
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: AssetImage(LuxuryProduct.image),
+                              fit: BoxFit.cover)),
+                    ),
+                    title: Text(LuxuryProduct.name),
+                    subtitle: Text(
+                      LuxuryProduct.description,
+                      textAlign: TextAlign.start,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: Text(LuxuryProduct.currentPrice.toString()),
+                    isThreeLine: true,
+                  );
+                }),
+    );
   }
 }

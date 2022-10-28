@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+@immutable
 class LuxuryProduct {
   final int id;
   final String name;
@@ -14,6 +15,7 @@ class LuxuryProduct {
   final double rateStar;
   final int quantityPurchased;
   late bool isLiked;
+  late int numberCountProduct;
 
   LuxuryProduct({
     required this.id,
@@ -29,5 +31,6 @@ class LuxuryProduct {
     required this.rateStar,
     required this.quantityPurchased,
     required this.isLiked,
+    required this.numberCountProduct,
   });
 }

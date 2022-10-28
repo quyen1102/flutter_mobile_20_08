@@ -17,6 +17,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 2.5,
     quantityPurchased: 2,
     isLiked: false,
+    numberCountProduct: 3,
   ),
   LuxuryProduct(
     id: 2,
@@ -34,6 +35,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 3.5,
     quantityPurchased: 2,
     isLiked: false,
+    numberCountProduct: 3,
   ),
   LuxuryProduct(
     id: 3,
@@ -51,6 +53,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 4.5,
     quantityPurchased: 2,
     isLiked: false,
+    numberCountProduct: 3,
   ),
   LuxuryProduct(
     id: 5,
@@ -68,6 +71,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 1.3,
     quantityPurchased: 2,
     isLiked: false,
+    numberCountProduct: 3,
   ),
   LuxuryProduct(
     id: 5,
@@ -85,6 +89,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 5,
     quantityPurchased: 2,
     isLiked: false,
+    numberCountProduct: 3,
   ),
   LuxuryProduct(
     id: 6,
@@ -102,6 +107,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 4.5,
     quantityPurchased: 2,
     isLiked: false,
+    numberCountProduct: 3,
   ),
   LuxuryProduct(
     id: 7,
@@ -119,6 +125,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 4.5,
     quantityPurchased: 2,
     isLiked: false,
+    numberCountProduct: 3,
   ),
   LuxuryProduct(
     id: 8,
@@ -136,5 +143,6 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 4.5,
     quantityPurchased: 2,
     isLiked: false,
+    numberCountProduct: 3,
   ),
 ];

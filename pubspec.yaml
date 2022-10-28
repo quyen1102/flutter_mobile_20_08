@@ -38,6 +38,7 @@ dependencies:
   scrollable_positioned_list: ^0.3.4
   readmore: ^2.2.0
   carousel_slider: ^4.1.1
+  fluttertoast: ^8.1.1
 
 dev_dependencies:
   flutter_test:

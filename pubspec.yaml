@@ -40,6 +40,8 @@ dependencies:
   carousel_slider: ^4.1.1
   fluttertoast: ^8.1.1
   search_page: ^2.2.0
+  firebase_core: ^2.1.1
+  dropdown_textfield: ^1.0.5
 
 dev_dependencies:
   flutter_test:

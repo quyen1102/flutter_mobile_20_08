@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobile_20_08/features/Home/HomeScreen.dart';
+import 'package:flutter_mobile_20_08/features/login/login.dart';
 import 'package:flutter_mobile_20_08/store/data/products.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:search_page/search_page.dart';
@@ -8,6 +9,7 @@ import '../common/horizontalScroll.dart';
 import '../common/theme.dart';
 import '../store/models/luxuryProduct.dart';
 import 'Home/demoSceen/scrollToIndex.dart';
+import 'profile/profile.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -41,7 +43,7 @@ class _AppContentState extends State<AppContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: renderFloatingBtnSearch(),
+      // floatingActionButton: renderFloatingBtnSearch(),
       body: Container(
         decoration: BoxDecoration(
           color: primaryWhiteColor,
@@ -65,7 +67,7 @@ class _AppContentState extends State<AppContent> {
   }
 
   HomeScreen? homeScreen;
-
+  Profile? profileScreen;
   renderHomeContent() {
     homeScreen = const HomeScreen();
     return homeScreen;
@@ -75,7 +77,10 @@ class _AppContentState extends State<AppContent> {
 
   renderSearch() {}
 
-  renderProfiles() {}
+  renderProfiles() {
+    profileScreen = const Profile();
+    return profileScreen;
+  }
 
   renderFloatingBtnSearch() {
     return FloatingActionButton(
@@ -111,8 +116,10 @@ class _AppContentState extends State<AppContent> {
           _renderBarButton(
             1,
             'Search',
-            FaIcon(FontAwesomeIcons.magnifyingGlass, color: colorOrigin, size: 24),
-            FaIcon(FontAwesomeIcons.magnifyingGlass,color: colorActive, size: 26),
+            FaIcon(FontAwesomeIcons.magnifyingGlass,
+                color: colorOrigin, size: 24),
+            FaIcon(FontAwesomeIcons.magnifyingGlass,
+                color: colorActive, size: 26),
           ),
           _renderBarButton(
             2,
@@ -190,7 +197,6 @@ class _AppContentState extends State<AppContent> {
     showSearch(
         context: context,
         delegate: SearchPage<LuxuryProduct>(
-
           onQueryUpdate: print,
           items: listLuxuryPerfumeProduct,
           searchLabel: 'Tìm kiếm',
@@ -237,13 +243,12 @@ class _AppContentState extends State<AppContent> {
             child: ListTile(
               selectedColor: primaryColor,
               leading: Container(
-                height: 60,
-                width: 60,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage(LuxuryProduct.image),
-                        fit: BoxFit.cover)),
-              ),
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage(LuxuryProduct.image),
+                          fit: BoxFit.cover))),
               title: Text(LuxuryProduct.name),
               subtitle: Text(
                 LuxuryProduct.description,
@@ -266,30 +271,30 @@ class Product extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: ListView.builder(
-                itemCount: listLuxuryPerfumeProduct.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final LuxuryProduct = listLuxuryPerfumeProduct[index];
-                  return ListTile(
-                    selectedColor: primaryColor,
-                    leading: Container(
-                      height: 60,
-                      width: 60,
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: AssetImage(LuxuryProduct.image),
-                              fit: BoxFit.cover)),
-                    ),
-                    title: Text(LuxuryProduct.name),
-                    subtitle: Text(
-                      LuxuryProduct.description,
-                      textAlign: TextAlign.start,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    trailing: Text(LuxuryProduct.currentPrice.toString()),
-                    isThreeLine: true,
-                  );
-                }),
+          itemCount: listLuxuryPerfumeProduct.length,
+          itemBuilder: (BuildContext context, int index) {
+            final LuxuryProduct = listLuxuryPerfumeProduct[index];
+            return ListTile(
+              selectedColor: primaryColor,
+              leading: Container(
+                height: 60,
+                width: 60,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage(LuxuryProduct.image),
+                        fit: BoxFit.cover)),
+              ),
+              title: Text(LuxuryProduct.name),
+              subtitle: Text(
+                LuxuryProduct.description,
+                textAlign: TextAlign.start,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: Text(LuxuryProduct.currentPrice.toString()),
+              isThreeLine: true,
+            );
+          }),
     );
   }
 }

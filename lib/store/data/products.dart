@@ -2,7 +2,7 @@ import '../models/luxuryProduct.dart';
 
 List<LuxuryProduct> listLuxuryPerfumeProduct = [
   LuxuryProduct(
-    id: 1,
+    id: "001",
     name: "Promio body lotion",
     brandName: "SkinCeuticals",
     image: "assets/images/product_01.jpg",
@@ -20,7 +20,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     numberCountProduct: 3,
   ),
   LuxuryProduct(
-    id: 2,
+    id: "002",
     name: "Nước hoa nhài",
     brandName: "Thiên thanh",
     image: "assets/images/product_02.jpg",
@@ -38,7 +38,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     numberCountProduct: 3,
   ),
   LuxuryProduct(
-    id: 3,
+    id: "003",
     name: "Promio body lotion",
     brandName: "SkinCeuticals",
     image: "assets/images/product_03.jpg",
@@ -56,7 +56,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     numberCountProduct: 3,
   ),
   LuxuryProduct(
-    id: 5,
+    id: "004",
     name: "Promio body lotion",
     brandName: "SkinCeuticals",
     image: "assets/images/product_04.jpg",
@@ -74,7 +74,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     numberCountProduct: 3,
   ),
   LuxuryProduct(
-    id: 5,
+    id: "005",
     name: "Promio body lotion",
     brandName: "SkinCeuticals",
     image: "assets/images/product_05.jpg",
@@ -92,7 +92,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     numberCountProduct: 3,
   ),
   LuxuryProduct(
-    id: 6,
+    id: "006",
     name: "Promio body lotion",
     brandName: "SkinCeuticals",
     image: "assets/images/product_06.jpg",
@@ -110,7 +110,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     numberCountProduct: 3,
   ),
   LuxuryProduct(
-    id: 7,
+    id: "007",
     name: "Promio body lotion",
     brandName: "SkinCeuticals",
     image: "assets/images/product_07.jpg",
@@ -128,7 +128,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     numberCountProduct: 3,
   ),
   LuxuryProduct(
-    id: 8,
+    id: "008",
     name: "Promio body lotion",
     brandName: "SkinCeuticals",
     image: "assets/images/product_01.jpg",

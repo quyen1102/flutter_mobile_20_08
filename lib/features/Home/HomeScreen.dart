@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobile_20_08/common/theme.dart';
 import 'package:flutter_mobile_20_08/store/models/luxuryProduct.dart';
@@ -15,6 +16,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // get data from firebase
+  // CollectionReference luxuryProduct =
+  //     FirebaseFirestore.instance.collection('luxyryProduct');
+  //==============
+
   final List<String> listFavorites = <String>[
     'Kids',
     'Women',
@@ -222,8 +228,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _renderPrice(product){
-    return   Container(
+  _renderPrice(product) {
+    return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -251,8 +257,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
-
   }
+
   _renderListItemRecentProduct(List<LuxuryProduct> luxuryProducts) {
     List<Widget> list = [];
     for (var i = 0; i < luxuryProducts.length; i++) {
@@ -263,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   _renderRecentProductItem(LuxuryProduct luxuryProduct) {
     return InkWell(
-      onTap: (){
+      onTap: () {
         _gotoProductDetailScreen(luxuryProduct);
       },
       child: Container(
@@ -398,9 +404,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _gotoProductDetailScreen(LuxuryProduct product) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => DetailProductScreen(product: product,))
-    );
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => DetailProductScreen()));
   }
 }

@@ -29,6 +29,13 @@
             {
               "client_id": "799156312283-t4td3sdk1u3pa86us2or7qup3l4slme6.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "799156312283-38jmjuh1gaongs76pt5q83iqei909kas.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.flutterMobile2008"
+              }
             }
           ]
         }

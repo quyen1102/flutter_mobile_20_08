@@ -4,6 +4,7 @@ import 'package:flutter/src/widgets/framework.dart';
 
 import '../../common/theme.dart';
 import 'HomeScreen.dart';
+import 'demoSceen/add_data_to_firebase.dart';
 import 'demoSceen/scrollToIndex.dart';
 
 class DrawerApp extends StatefulWidget {
@@ -67,7 +68,7 @@ class _DrawerAppState extends State<DrawerApp> {
               textColor: primaryColor,
               selectedColor: primaryOrangeColor,
               leading: const Icon(Icons.shopping_cart),
-              title: const Text('About something'),
+              title: const Text('Add data to fire base handle'),
               selected: _selectedDestination == 2,
               onTap: () => selectDestination(2),
             ),
@@ -120,7 +121,7 @@ class _DrawerAppState extends State<DrawerApp> {
     } else if (_selectedDestination == 1) {
       _gotoScreen( const ScrollablePositionedListPage());
     }else if (_selectedDestination == 2) {
-      _gotoScreen( const HomeScreen());
+      _gotoScreen( const AddDataToFireBase());
     }else if (_selectedDestination == 3) {
       _gotoScreen( const HomeScreen());
     }else if (_selectedDestination == 4) {

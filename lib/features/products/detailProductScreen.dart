@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -10,36 +12,137 @@ import '../../store/data/products.dart';
 import '../../store/models/luxuryProduct.dart';
 
 class DetailProductScreen extends StatefulWidget {
-  const DetailProductScreen({Key? key, required this.product}) : super(key: key);
-  final LuxuryProduct product;
+  const DetailProductScreen({Key? key}) : super(key: key);
 
   @override
   State<DetailProductScreen> createState() => _DetailProductScreenState();
 }
 
-class _DetailProductScreenState extends State<DetailProductScreen> {
+class _DetailProductScreenState extends State<DetailProductScreen>
+    with AutomaticKeepAliveClientMixin {
+  final documentID = "2foqbnVDqJK2bzsZbWHz";
+  CollectionReference luxuryProduct =
+      FirebaseFirestore.instance.collection('product');
   final List<LuxuryProduct> listProduct = listLuxuryPerfumeProduct;
+
   double _totalPrice = 0;
   int _currentSliderIndex = 0;
   int _initNumberProduct = 0;
+
+  LuxuryProduct? product;
+  var _futureGetData;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _futureGetData = luxuryProduct.doc(documentID).get();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-        body: CustomScrollView(
-      slivers: [
-        _renderSliverAppBarr(size, widget.product),
-        SliverToBoxAdapter(child: _renderBody(size, widget.product)),
-        SliverToBoxAdapter(child: renderCarouselSlider(context)),
-        const SliverToBoxAdapter( child: SizedBox(height: 30))
-      ],
-    ),
-      bottomNavigationBar: _renderBottomNavigationBar() ,
+      // body: _renderBodyCustomScrollView(product!),
+      body: _loadProductDetail(),
+      bottomNavigationBar: _renderBottomNavigationBar(),
     );
   }
 
-  _renderBottomNavigationBar(){
+  _loadProductDetail() {
+    return FutureBuilder<DocumentSnapshot>(
+      future: _futureGetData,
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return _renderSomeThingWentWrong();
+        }
 
+        if (snapshot.hasData && !snapshot.data!.exists) {
+          return _renderDocDoseNotExits();
+        }
+
+        if (snapshot.connectionState == ConnectionState.done) {
+          Map<String, dynamic> data =
+              snapshot.data!.data() as Map<String, dynamic>;
+          product = LuxuryProduct.fromJson(data);
+
+          return _renderBodyCustomScrollView(product!);
+          // return _renderLoading();
+        }
+
+        return _renderLoading();
+      },
+    );
+  }
+
+  _renderLoading() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: loading,
+        )
+      ],
+    );
+  }
+
+  _renderDocDoseNotExits() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: Text(
+            "Document does not exist",
+            style: TextStyle(
+              color: primaryOrangeColor,
+              fontSize: 18,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  _renderSomeThingWentWrong() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Center(
+          child: Text(
+            "Something went wrong",
+            style: TextStyle(
+              color: primaryOrangeColor,
+              fontSize: 18,
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
+  _renderBodyCustomScrollView(LuxuryProduct product) {
+    Size size = MediaQuery.of(context).size;
+    return CustomScrollView(
+      slivers: [
+        _renderSliverAppBarr(size, product),
+        SliverToBoxAdapter(child: _renderBody(size, product)),
+        SliverToBoxAdapter(child: renderCarouselSlider(context)),
+        const SliverToBoxAdapter(child: SizedBox(height: 30))
+      ],
+    );
+  }
+
+  SpinKitPouringHourGlassRefined loading = SpinKitPouringHourGlassRefined(
+    color: primaryOrangeColor,
+    size: 50.0,
+    duration: const Duration(milliseconds: 2000),
+    // controller: AnimationController(vsync: this , duration: const Duration(milliseconds: 1200)),
+  );
+
+  _renderBottomNavigationBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
       child: Row(
@@ -49,11 +152,18 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
             width: 150,
             height: 50,
             child: Column(
-              children:  [
-                const Text("Total price", style: TextStyle(color: Colors.black54, fontSize: 15)),
+              children: [
+                const Text("Total price",
+                    style: TextStyle(color: Colors.black54, fontSize: 15)),
                 (_totalPrice > 0)
-                    ? Text("\$${_totalPrice.toStringAsFixed(2)}",  style: TextStyle(color: primarySuperDarkColor, fontSize: 20, fontWeight: FontWeight.bold))
-                    : Text("- -  - -",  style: TextStyle(color: primarySuperDarkColor, fontSize: 22))
+                    ? Text("\$${_totalPrice.toStringAsFixed(2)}",
+                        style: TextStyle(
+                            color: primarySuperDarkColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold))
+                    : Text("- -  - -",
+                        style: TextStyle(
+                            color: primarySuperDarkColor, fontSize: 22))
               ],
             ),
           ),
@@ -63,26 +173,27 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 26),
               primary: primaryColor,
               shape: RoundedRectangleBorder(
-                  borderRadius:  BorderRadius.circular(30.0)
-              ),
+                  borderRadius: BorderRadius.circular(30.0)),
               elevation: 0,
               onPrimary: Colors.white,
-              textStyle:const  TextStyle(
+              textStyle: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
               ),
             ),
             label: const Text('Add to Cart'),
-            icon: const Icon(Icons.shopping_bag_outlined,  size: 24, color: Colors.white,),
+            icon: const Icon(
+              Icons.shopping_bag_outlined,
+              size: 24,
+              color: Colors.white,
+            ),
           ),
-
         ],
       ),
     );
   }
-  _onPressAddToCart(){
 
-  }
+  _onPressAddToCart() {}
   _renderSliverAppBarr(size, product) {
     return SliverAppBar(
       pinned: true,
@@ -117,6 +228,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
       ),
     );
   }
+
   _renderBackgroundImage(size, image) {
     // var image;
     // if (imagePath != '' && imagePath != null) {
@@ -143,7 +255,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
         Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image:AssetImage('$image'),
+              image: AssetImage('$image'),
               fit: BoxFit.cover,
             ),
           ),
@@ -166,7 +278,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
             child: Text(
               product.name.toString().trim(),
               textAlign: TextAlign.left,
-              style:  TextStyle(
+              style: TextStyle(
                 color: primaryDarkColor,
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -179,7 +291,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
             child: Text(
               "Brand : ${product.brandName.toString().trim()}",
               textAlign: TextAlign.left,
-              style:  TextStyle(
+              style: TextStyle(
                 color: primaryDarkColor,
                 fontSize: 14,
                 fontStyle: FontStyle.italic,
@@ -187,7 +299,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
             ),
           ),
           _renderPriceAndRateStar(product),
-          _renderCountProduct(widget.product),
+          _renderCountProduct(product),
           Divider(
             color: primaryDarkColor,
             height: 1,
@@ -207,34 +319,33 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
     );
   }
 
-  _renderContent(String title, String content){
+  _renderContent(String title, String content) {
     return Column(
       children: [
         Container(
           alignment: Alignment.topLeft,
-          padding: const  EdgeInsets.symmetric(vertical:10),
-          child: Text(
-          title,
-          style:  TextStyle(
-            fontSize: 18,
-            color: primaryDarkColor,
-            fontWeight: FontWeight.bold,
-          )
-        ),),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Text(title,
+              style: TextStyle(
+                fontSize: 18,
+                color: primaryDarkColor,
+                fontWeight: FontWeight.bold,
+              )),
+        ),
         ReadMoreText(
           content,
-           trimLines: 3,
+          trimLines: 3,
           textAlign: TextAlign.justify,
-           style: const  TextStyle(
-             fontSize: 16,
-             height: 1.6,
-           ),
-           colorClickableText: primaryOrangeColor,
-           trimMode: TrimMode.Line,
-           trimCollapsedText: 'Read more',
-           trimExpandedText: 'Show less',
-           moreStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-         ),
+          style: const TextStyle(
+            fontSize: 16,
+            height: 1.6,
+          ),
+          colorClickableText: primaryOrangeColor,
+          trimMode: TrimMode.Line,
+          trimCollapsedText: 'Read more',
+          trimExpandedText: 'Show less',
+          moreStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        ),
       ],
     );
   }
@@ -271,99 +382,90 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
     );
   }
 
-  _renderPriceAndRateStar(LuxuryProduct product){
-    return   Row(
+  _renderPriceAndRateStar(LuxuryProduct product) {
+    return Row(
       children: [
         Expanded(
           flex: 1,
           child: SizedBox(
-            child:  _renderNumberStar(product.rateStar),
+            child: _renderNumberStar(product.rateStar),
           ),
         ),
         Expanded(
           flex: 1,
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(
-                "\$${product.lastPrice.toString()}",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  decoration: TextDecoration.lineThrough,
-                  fontSize: 16,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w500,
-                ),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+            Text(
+              "\$${product.lastPrice.toString()}",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                decoration: TextDecoration.lineThrough,
+                fontSize: 16,
+                color: Colors.black54,
+                fontWeight: FontWeight.w500,
               ),
-              Text(
-                "\$${product.currentPrice.toString()}",
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                  fontSize: 16,
-                  color: Color(0xffE5AA63),
-                  fontWeight: FontWeight.w500,
-                ),
+            ),
+            Text(
+              "\$${product.currentPrice.toString()}",
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Color(0xffE5AA63),
+                fontWeight: FontWeight.w500,
               ),
-            ]
-          ),
+            ),
+          ]),
         ),
-
       ],
     );
-
   }
-
 
   renderCarouselSlider(BuildContext context) {
     return Container(
       height: 550,
-      decoration: const  BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
       ),
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _renderTitle("Other products"),
-                _btnSeeMore(),
-              ]
-            ),
+      child: Column(children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            _renderTitle("Other products"),
+            _btnSeeMore(),
+          ]),
+        ),
+        CarouselSlider(
+          options: CarouselOptions(
+            height: 450,
+            aspectRatio: 16 / 9,
+            viewportFraction: 0.8,
+            initialPage: 0,
+            enableInfiniteScroll: true,
+            reverse: false,
+            autoPlay: false,
+            autoPlayInterval: const Duration(seconds: 5),
+            autoPlayAnimationDuration: const Duration(milliseconds: 2000),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            enlargeCenterPage: true,
+            onPageChanged: (int i, CarouselPageChangedReason reason) {
+              setState(() {
+                _currentSliderIndex = i;
+              });
+            },
+            scrollDirection: Axis.horizontal,
           ),
-          CarouselSlider(
-            options: CarouselOptions(
-              height: 450,
-              aspectRatio: 16 / 9,
-              viewportFraction: 0.8,
-              initialPage: 0,
-              enableInfiniteScroll: true,
-              reverse: false,
-              autoPlay: true,
-              autoPlayInterval:const   Duration(seconds: 5),
-              autoPlayAnimationDuration:const  Duration(milliseconds: 2000),
-              autoPlayCurve: Curves.fastOutSlowIn,
-              enlargeCenterPage: true,
-              onPageChanged: (int i, CarouselPageChangedReason reason) {
-                setState(() {
-                  _currentSliderIndex = i;
-                });
+          items: listProduct.map((product) {
+            return Builder(
+              builder: (BuildContext context) {
+                return _renderItemProduct(product);
               },
-              scrollDirection: Axis.horizontal,
-            ),
-            items: listProduct.map((product) {
-              return Builder(
-                builder: (BuildContext context) {
-                  return _renderItemProduct(product);
-                },
-              );
-            }).toList(),
-          ),
-        ]
-      ),
+            );
+          }).toList(),
+        ),
+      ]),
     );
   }
 
@@ -373,7 +475,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
       margin: const EdgeInsets.only(bottom: 10),
       child: Text(
         '$text',
-        style:  TextStyle(
+        style: TextStyle(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: primaryDarkColor,
@@ -447,11 +549,10 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
 
   _btnSeeMore() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical:10),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       alignment: Alignment.bottomRight,
       child: InkWell(
-        onTap: () {
-        },
+        onTap: () {},
         child: Text(
           "Xem thêm",
           style: TextStyle(fontSize: 12, color: primaryColor),
@@ -460,8 +561,8 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
     );
   }
 
-  _renderPrice(product){
-    return   Row(
+  _renderPrice(product) {
+    return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Text(
@@ -488,49 +589,45 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
         ),
       ],
     );
-
   }
 
-  void _gotoProductDetailScreen(LuxuryProduct product) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => DetailProductScreen(product: product,))
-    );
+  _gotoProductDetailScreen(LuxuryProduct product) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => DetailProductScreen()));
   }
-
 
   _renderCountProduct(LuxuryProduct product) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical:10, horizontal:26),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 26),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           _renderBtnHandleCount(_reduceProduct, "-"),
           _renderViewNumberCount(),
           _renderBtnHandleCount(_addProduct, "+"),
-
         ],
       ),
     );
   }
 
-  _renderViewNumberCount(){
+  _renderViewNumberCount() {
     return Container(
       width: 50,
       height: 20,
       alignment: Alignment.center,
       child: Text(_initNumberProduct.toString(),
-        style:const TextStyle(
-          fontSize: 18,
-          color: Colors.black,
-        )
-      ),
+          style: const TextStyle(
+            fontSize: 18,
+            color: Colors.black,
+          )),
     );
   }
 
-  _renderBtnHandleCount( onTap, String handleType ){
-    return  InkWell(
-        onTap: onTap,
+  _renderBtnHandleCount(Function onTap, String handleType) {
+    return InkWell(
+        onTap: () {
+          onTap();
+        },
         child: Container(
             height: 35,
             width: 35,
@@ -538,7 +635,7 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
             decoration: BoxDecoration(
               color: primaryLightColor.withOpacity(0.5),
               borderRadius: BorderRadius.circular(10.0),
-              border: Border.all(color: primaryColor, width:1),
+              border: Border.all(color: primaryColor, width: 1),
             ),
             child: Text(
               handleType,
@@ -546,26 +643,27 @@ class _DetailProductScreenState extends State<DetailProductScreen> {
                 fontSize: 20,
                 color: primaryDarkColor,
               ),
-            )
-        )
-    );
+            )));
   }
 
-  _addProduct(){
+  _addProduct() {
     setState(() {
-      if(_initNumberProduct < 10){
+      if (_initNumberProduct < 10) {
         _initNumberProduct++;
-        _totalPrice = _initNumberProduct * widget.product.currentPrice;
+        _totalPrice = _initNumberProduct * product!.currentPrice;
       }
     });
   }
 
-  _reduceProduct(){
+  _reduceProduct() {
     setState(() {
-      if(_initNumberProduct > 0){
+      if (_initNumberProduct > 0) {
         _initNumberProduct--;
-        _totalPrice = _initNumberProduct * widget.product.currentPrice;
-      }});
+        _totalPrice = _initNumberProduct * product!.currentPrice;
+      }
+    });
   }
+  
 
+  
 }

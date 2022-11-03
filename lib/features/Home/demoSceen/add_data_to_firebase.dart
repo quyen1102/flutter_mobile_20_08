@@ -29,13 +29,17 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
   TextEditingController? numberCountProductEditingController;
   isLiked _isLike = isLiked.like;
 
-  CollectionReference luxuryProductRef = FirebaseFirestore.instance
-      .collection('product')
-      .withConverter<LuxuryProduct>(
-        fromFirestore: (snapshots, _) =>
-            LuxuryProduct.fromJson(snapshots.data()!),
-        toFirestore: (product, _) => product.toJson(),
-      );
+  // final luxuryProductRef = FirebaseFirestore.instance
+  //     .collection('luxuryProduct')
+  //     .withConverter<LuxuryProduct>(
+  //       fromFirestore: (snapshots,_) =>
+  //           LuxuryProduct.fromJson(snapshots.data()!),
+  //       toFirestore: (product,_) => product.toJson(),
+  //     );
+        final luxuryProductRef = FirebaseFirestore.instance
+      .collection('luxuryProduct')
+      .doc();
+
 
   @override
   void initState() {
@@ -294,7 +298,7 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
 
   void onPressedCreateData() {
     LuxuryProduct luxuryProduct = LuxuryProduct(
-      id: luxuryProductRef.doc().id,
+      id: luxuryProductRef.id,
       name: nameEditingController?.text as String,
       brandName: brandNameEditingController?.text as String,
       image: imageEditingController?.text as String,
@@ -310,13 +314,19 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
       numberCountProduct: int.parse(numberCountProductEditingController?.text as String),
     );
     final json = luxuryProduct.toJson();
-    print(json.runtimeType);
+    // print(json.runtimeType);
     createProduct(luxuryProduct: luxuryProduct);
   }
 
-  Future createProduct({  luxuryProduct}) async {
+  // Future createProduct({  luxuryProduct}) async {
+  //   return luxuryProductRef
+  //       . add(luxuryProduct)
+  //       .then((value) => print("Product Added"))
+  //       .catchError((error) => print("Failed to add product: $error"));
+  // }
+   Future createProduct({  luxuryProduct}) async {
     return luxuryProductRef
-        .add(luxuryProduct)
+        . set(luxuryProduct.toJson(), SetOptions(merge: true) )
         .then((value) => print("Product Added"))
         .catchError((error) => print("Failed to add product: $error"));
   }

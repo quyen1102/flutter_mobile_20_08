@@ -12,18 +12,20 @@ import '../../store/data/products.dart';
 import '../../store/models/luxuryProduct.dart';
 
 class DetailProductScreen extends StatefulWidget {
-  const DetailProductScreen({Key? key}) : super(key: key);
+  const DetailProductScreen({Key? key, required this.luxuryProduct})
+      : super(key: key);
 
+  final LuxuryProduct luxuryProduct;
   @override
   State<DetailProductScreen> createState() => _DetailProductScreenState();
 }
 
 class _DetailProductScreenState extends State<DetailProductScreen>
     with AutomaticKeepAliveClientMixin {
-  final documentID = "2foqbnVDqJK2bzsZbWHz";
-  CollectionReference luxuryProduct =
-      FirebaseFirestore.instance.collection('product');
-  final List<LuxuryProduct> listProduct = listLuxuryPerfumeProduct;
+  // get data from firebase
+  CollectionReference luxuryProductRef =
+      FirebaseFirestore.instance.collection('luxuryProduct');
+  List<LuxuryProduct> listLuxuryProduct = [];
 
   double _totalPrice = 0;
   int _currentSliderIndex = 0;
@@ -35,11 +37,24 @@ class _DetailProductScreenState extends State<DetailProductScreen>
   void initState() {
     // TODO: implement initState
     super.initState();
-    _futureGetData = luxuryProduct.doc(documentID).get();
+    _loadListData();
+    _futureGetData = luxuryProductRef.doc(widget.luxuryProduct.id).get();
   }
 
   @override
   bool get wantKeepAlive => true;
+
+  _loadListData(){
+    luxuryProductRef.get().then(
+      (QuerySnapshot querySnapshot) {
+        for (var element in querySnapshot.docs) {
+          LuxuryProduct product = LuxuryProduct.fromJson(element.data());
+          listLuxuryProduct.add(product);
+        }
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -445,8 +460,8 @@ class _DetailProductScreenState extends State<DetailProductScreen>
             initialPage: 0,
             enableInfiniteScroll: true,
             reverse: false,
-            autoPlay: false,
-            autoPlayInterval: const Duration(seconds: 5),
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 4),
             autoPlayAnimationDuration: const Duration(milliseconds: 2000),
             autoPlayCurve: Curves.fastOutSlowIn,
             enlargeCenterPage: true,
@@ -457,7 +472,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
             },
             scrollDirection: Axis.horizontal,
           ),
-          items: listProduct.map((product) {
+          items: listLuxuryProduct.map((product) {
             return Builder(
               builder: (BuildContext context) {
                 return _renderItemProduct(product);
@@ -483,7 +498,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
       ),
     );
   }
-
+  
   _renderItemProduct(LuxuryProduct product) {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
@@ -592,8 +607,12 @@ class _DetailProductScreenState extends State<DetailProductScreen>
   }
 
   _gotoProductDetailScreen(LuxuryProduct product) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => DetailProductScreen()));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DetailProductScreen(
+                  luxuryProduct: product,
+                )));
   }
 
   _renderCountProduct(LuxuryProduct product) {
@@ -663,7 +682,4 @@ class _DetailProductScreenState extends State<DetailProductScreen>
       }
     });
   }
-  
-
-  
 }

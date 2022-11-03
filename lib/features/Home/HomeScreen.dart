@@ -1,3 +1,4 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobile_20_08/common/theme.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_mobile_20_08/store/models/luxuryProduct.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../../store/data/products.dart';
+import '../../store/models/listLuxuryProduct.dart';
 import '../products/detailProductScreen.dart';
 import 'DrawerApp.dart';
 
@@ -17,9 +19,28 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   // get data from firebase
-  // CollectionReference luxuryProduct =
-  //     FirebaseFirestore.instance.collection('luxyryProduct');
-  //==============
+  CollectionReference luxuryProductRef =
+      FirebaseFirestore.instance.collection('luxuryProduct');
+  List<LuxuryProduct> listLuxuryProduct = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadData();
+  }
+
+  _loadData() {
+    luxuryProductRef.get().then(
+      (QuerySnapshot querySnapshot) {
+        for (var element in querySnapshot.docs) {
+          LuxuryProduct product = LuxuryProduct.fromJson(element.data());
+          listLuxuryProduct.add(product);
+        }
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+  }
 
   final List<String> listFavorites = <String>[
     'Kids',
@@ -36,9 +57,9 @@ class _HomeScreenState extends State<HomeScreen> {
     'T-Shirt',
   ];
 
-  final List<LuxuryProduct> luxuryProduct = listLuxuryPerfumeProduct;
   @override
   Widget build(BuildContext context) {
+    // print("list product: ${listLuxuryProduct}");
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -62,6 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               _renderListBtnFavorites(),
+              _renderCarouselSlider(context),
               _renderHotProductList(),
               const SizedBox(height: 10),
               _renderRecentOrderList(),
@@ -74,13 +96,86 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  int _currentSliderIndex = 0;
+  _renderCarouselSlider(BuildContext context) {
+    return Container(
+      height: 120,
+      // padding: const EdgeInsets.symmetric(horizontal: 20),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+      ),
+      child: Column(children: [
+        CarouselSlider(
+          options: CarouselOptions(
+            height: 120,
+            aspectRatio: 16 / 9,
+            viewportFraction: 1,
+            initialPage: 0,
+            enableInfiniteScroll: true,
+            reverse: false,
+            autoPlay: true,
+            autoPlayInterval: const Duration(seconds: 4),
+            autoPlayAnimationDuration: const Duration(milliseconds: 500),
+            autoPlayCurve: Curves.fastOutSlowIn,
+            // enlargeCenterPage: true,
+            onPageChanged: (int i, CarouselPageChangedReason reason) {
+              setState(() {
+                _currentSliderIndex = i;
+              });
+            },
+            scrollDirection: Axis.horizontal,
+          ),
+          items: listLuxuryProduct.map((product) {
+            return Builder(
+              builder: (BuildContext context) {
+                return _renderItemProductBanner(product);
+              },
+            );
+          }).toList(),
+        ),
+      ]),
+    );
+  }
+
+  _renderItemProductBanner(LuxuryProduct product){
+      Size size = MediaQuery.of(context).size;
+    double width = size.width;
+    double height = size.height;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: InkWell(
+        onTap: () {
+          _gotoProductDetailScreen(product);
+        },
+        child: SizedBox(
+          height: 100,
+          width: width,
+          // margin: const EdgeInsets.symmetric(horizontal: 10),
+          child: Column(
+            children: [
+              Container(
+                height: 100,
+                width: width,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  image: DecorationImage(
+                      image: AssetImage(product.image), fit: BoxFit.cover),
+                ),
+              ),
+             ],
+          ),
+        ),
+      ),
+    );
+  }
+
   _renderListBtnFavorites() {
     return SizedBox(
       height: 60,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.only(right: 18),
-          itemCount: listFavorites.length,
+          itemCount: listLuxuryProduct.length,
           itemBuilder: (BuildContext context, int index) {
             return InkWell(
               onTap: () {
@@ -99,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Center(
                   child: Text(
-                    listFavorites[index],
+                    listLuxuryProduct[index].name,
                     style: TextStyle(
                       color: primaryColor,
                       fontSize: 16,
@@ -135,7 +230,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             ],
           ),
-          _renderListItemHotProduct(luxuryProduct),
+          _renderListItemHotProduct(listLuxuryProduct),
         ],
       ),
     );
@@ -154,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _renderTitle("Recent Products"),
             ],
           ),
-          _renderListItemRecentProduct(luxuryProduct),
+          _renderListItemRecentProduct(listLuxuryProduct),
         ],
       ),
     );
@@ -342,7 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           InkWell(
                               onTap: () {
-                                print(luxuryProduct.isLiked);
+                                // print(luxuryProduct.isLiked);
                                 setState(() {
                                   (luxuryProduct.isLiked)
                                       ? (luxuryProduct.isLiked = false)
@@ -405,6 +500,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _gotoProductDetailScreen(LuxuryProduct product) {
     Navigator.push(context,
-        MaterialPageRoute(builder: (context) => DetailProductScreen()));
+        MaterialPageRoute(builder: (context) => DetailProductScreen(luxuryProduct: product,)));
   }
 }

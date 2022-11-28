@@ -15,7 +15,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> {
   String dropdownValue = 'Dog';
-   FocusNode searchFocusNode = FocusNode();
+  FocusNode searchFocusNode = FocusNode();
   FocusNode textFieldFocusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
@@ -31,51 +31,6 @@ class _ProfileState extends State<Profile> {
                 }),
           ],
         ),
-        body: GestureDetector(
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                const Text(
-                  "Single selection dropdown with search option",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                DropDownTextField(
-                  searchAutofocus: true,
-                  clearOption: false,
-                  textFieldFocusNode: textFieldFocusNode,
-                  searchFocusNode: searchFocusNode,
-                  // searchAutofocus: true,
-                  dropDownItemCount: 8,
-                  searchShowCursor: false,
-                  enableSearch: true,
-                  searchKeyboardType: TextInputType.number,
-                  dropDownList: const [
-                    DropDownValueModel(name: 'name1', value: "value1"),
-                    DropDownValueModel(
-                        name: 'name2',
-                        value: "value2",
-                        toolTipMsg:
-                            "DropDownButton is a widget that we can use to select one unique value from a set of values"),
-                    DropDownValueModel(name: 'name3', value: "value3"),
-                    DropDownValueModel(
-                        name: 'name4',
-                        value: "value4",
-                        toolTipMsg:
-                            "DropDownButton is a widget that we can use to select one unique value from a set of values"),
-                    
-                  ],
-                  onChanged: (val) {},
-                ),
-                const SizedBox(
-                  height: 500,
-                ),
-              ],
-            ),
-          ),
-        ));
+        body: Container());
   }
 }

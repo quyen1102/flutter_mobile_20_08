@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
 import '../../common/theme.dart';
 
 class Login extends StatefulWidget {
@@ -32,7 +31,7 @@ class _LoginState extends State<Login> {
         body: GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Container(
-        decoration:  const BoxDecoration(
+        decoration: const BoxDecoration(
           color: Color(0xffedeff9),
         ),
         height: size.height,
@@ -46,51 +45,45 @@ class _LoginState extends State<Login> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    child: Text(
-                      "Wellcome to my app!",
-                      style:TextStyle(
-                        color: primaryDarkColor,
-                        fontSize:22,
-                      )
-                    )
-                  ),
+                      child: Text("Wellcome to my app!",
+                          style: TextStyle(
+                            color: primaryDarkColor,
+                            fontSize: 22,
+                          ))),
                   const SizedBox(height: 20),
                   _renderTextInput(
-                    controller: emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    autoCorrect: true,
-                    labelText: "Enter your email address",
-                    obscureText: false,
-                    enableSuggestions: true,
-                    valid: _validMail
-                  ),
-                   _renderTextInput(
-                    controller: passwordController,
-                    keyboardType: TextInputType.text,
-                    autoCorrect: false,
-                    labelText: "Password",
-                    obscureText: true,
-                    enableSuggestions: false,
-                    valid: _validPassword
-                  ),
-                    const SizedBox(height: 20),
+                      controller: emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      autoCorrect: true,
+                      labelText: "Enter your email address",
+                      obscureText: false,
+                      enableSuggestions: true,
+                      valid: _validMail),
+                  _renderTextInput(
+                      controller: passwordController,
+                      keyboardType: TextInputType.text,
+                      autoCorrect: false,
+                      labelText: "Password",
+                      obscureText: true,
+                      enableSuggestions: false,
+                      valid: _validPassword),
+                  const SizedBox(height: 20),
                   ElevatedButton(
-                    onPressed: onPressedLogin,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 50),
-                      shape: RoundedRectangleBorder(
-                          borderRadius:  BorderRadius.circular(30.0)
+                      onPressed: onPressedLogin,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: primaryColor,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 14, horizontal: 50),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0)),
+                        elevation: 0,
+                        onPrimary: Colors.white,
+                        textStyle: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
-                      elevation: 0,
-                      onPrimary: Colors.white,
-                      textStyle:const  TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                      ),
-                    ),
-                    child: Text("Login")
-                  ),
+                      child: Text("Login")),
                 ],
               ),
             ),
@@ -100,7 +93,14 @@ class _LoginState extends State<Login> {
     ));
   }
 
-  _renderTextInput(  {controller, keyboardType, autoCorrect, labelText, obscureText,enableSuggestions,valid}) {
+  _renderTextInput(
+      {controller,
+      keyboardType,
+      autoCorrect,
+      labelText,
+      obscureText,
+      enableSuggestions,
+      valid}) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       child: TextFormField(
@@ -109,50 +109,49 @@ class _LoginState extends State<Login> {
         obscureText: obscureText,
         keyboardType: keyboardType,
         autocorrect: autoCorrect,
-         cursorColor: Colors.black87,
+        cursorColor: Colors.black87,
         decoration: InputDecoration(
-          // labelText: labelText,
-          // labelStyle: const TextStyle(color: Colors.black54),
-            hintStyle: const  TextStyle(fontSize: 14),
-        hintText: labelText,
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
-          focusColor: primaryLightColor,
-          fillColor: Colors.white,
-          filled: true,
-          border: const OutlineInputBorder(
-           borderSide: BorderSide.none,
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-            gapPadding: 1.0,
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide.none,
-            borderRadius:  BorderRadius.all(Radius.circular(8)),
-            gapPadding: 4.0,
-          ),
-          suffixIcon: obscureText 
-          ? IconButton(
-          
-            icon: Icon(
-                _currentPasswordVisible
-                    ? Icons.visibility
-                    : Icons.visibility_off,
-                color: Colors.black54,
-                size: 20),
-            onPressed: () {
-              setState(() {
-                _currentPasswordVisible = !_currentPasswordVisible;
-              });
-            },
-          )
-          : null
-        ),
+            // labelText: labelText,
+            // labelStyle: const TextStyle(color: Colors.black54),
+            hintStyle: const TextStyle(fontSize: 14),
+            hintText: labelText,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+            focusColor: primaryLightColor,
+            fillColor: Colors.white,
+            filled: true,
+            border: const OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              gapPadding: 1.0,
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              gapPadding: 4.0,
+            ),
+            suffixIcon: obscureText
+                ? IconButton(
+                    icon: Icon(
+                        _currentPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.black54,
+                        size: 20),
+                    onPressed: () {
+                      setState(() {
+                        _currentPasswordVisible = !_currentPasswordVisible;
+                      });
+                    },
+                  )
+                : null),
         autovalidateMode: AutovalidateMode.onUserInteraction,
-        validator:valid,
+        validator: valid,
       ),
     );
   }
-   String? _validMail(String? value) {
+
+  String? _validMail(String? value) {
     if (value!.isEmpty) {
       return null;
     } else if (!RegExp(
@@ -164,11 +163,10 @@ class _LoginState extends State<Login> {
     }
   }
 
-String? _validPassword(String? value) {
+  String? _validPassword(String? value) {
     if (value!.isEmpty) {
       return null;
-    } else if (!RegExp(
-           r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$")
+    } else if (!RegExp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$")
         .hasMatch(value)) {
       return "Minimum eight characters, at least one letter and one number!";
     } else {
@@ -176,7 +174,9 @@ String? _validPassword(String? value) {
     }
   }
 
-  void onPressedLogin() {
-    
+  Future onPressedLogin() async {
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController!.text.trim(),
+        password: passwordController!.text.trim());
   }
 }

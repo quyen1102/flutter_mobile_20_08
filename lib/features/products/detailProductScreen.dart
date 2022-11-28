@@ -150,11 +150,10 @@ class _DetailProductScreenState extends State<DetailProductScreen>
     );
   }
 
-  SpinKitPouringHourGlassRefined loading = SpinKitPouringHourGlassRefined(
+  SpinKitFadingCircle loading = SpinKitFadingCircle(
     color: primaryOrangeColor,
     size: 50.0,
     duration: const Duration(milliseconds: 2000),
-    // controller: AnimationController(vsync: this , duration: const Duration(milliseconds: 1200)),
   );
 
   _renderBottomNavigationBar() {

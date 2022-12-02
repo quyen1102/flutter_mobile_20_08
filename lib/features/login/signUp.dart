@@ -1,30 +1,34 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_mobile_20_08/features/App.dart';
-import 'package:flutter_mobile_20_08/features/Home/HomeScreen.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/container.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_mobile_20_08/features/login/login.dart';
 
 import '../../common/theme.dart';
-import 'signUp.dart';
 
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginState extends State<Login> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   TextEditingController? emailController;
   TextEditingController? passwordController;
+  TextEditingController? confirmPasswordController;
   bool _currentPasswordVisible = true;
+  bool _currentConfirmPasswordVisible = true;
 
   @override
   void initState() {
     super.initState();
     emailController = TextEditingController();
     passwordController = TextEditingController();
+    confirmPasswordController = TextEditingController();
     _currentPasswordVisible = false;
+    _currentConfirmPasswordVisible = false;
   }
 
   @override
@@ -35,7 +39,7 @@ class _LoginState extends State<Login> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Container(
         decoration: const BoxDecoration(
-          color: Color(0xffedeff9),
+          color: Color.fromARGB(255, 164, 114, 192),
         ),
         height: size.height,
         width: size.width,
@@ -48,11 +52,11 @@ class _LoginState extends State<Login> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                      child: Text("Wellcome to my app!",
+                      child: Text("Sign Up",
                           style: TextStyle(
-                            color: primaryDarkColor,
-                            fontSize: 22,
-                          ))),
+                              color: primaryLightColor,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold))),
                   const SizedBox(height: 20),
                   _renderTextInput(
                       controller: emailController,
@@ -67,37 +71,45 @@ class _LoginState extends State<Login> {
                       keyboardType: TextInputType.text,
                       autoCorrect: false,
                       labelText: "Password",
-                      obscureText: !_currentPasswordVisible,
+                      obscureText: true,
+                      enableSuggestions: false,
+                      valid: _validPassword),
+                  _renderTextInput(
+                      controller: confirmPasswordController,
+                      keyboardType: TextInputType.text,
+                      autoCorrect: false,
+                      labelText: "Confirm Password",
+                      obscureText: true,
                       enableSuggestions: false,
                       valid: _validPassword),
                   const SizedBox(height: 20),
                   ElevatedButton(
-                      onPressed: onPressedLogin,
+                      onPressed: onPressedSignUp,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
+                        backgroundColor: Color.fromARGB(255, 232, 209, 63),
                         padding: const EdgeInsets.symmetric(
                             vertical: 14, horizontal: 50),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0)),
                         elevation: 0,
-                        onPrimary: Colors.white,
+                        onPrimary: primaryDarkColor,
                         textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                        ),
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold),
                       ),
-                      child: Text("Login")),
+                      child: Text("Sign Up")),
                   const SizedBox(
                     height: 30,
                   ),
                   TextButton(
-                    child: const Text("I have not a account!!!"),
-                    onPressed: () => signUpAccount(),
+                    child: const Text("Login"),
+                    onPressed: () => _gotoLogin(),
                     style: TextButton.styleFrom(
                       textStyle: TextStyle(
                         fontSize: 16,
                       ),
-                      foregroundColor: primaryDarkColor,
+                      foregroundColor: primaryLightColor,
                     ),
                   )
                 ],
@@ -190,7 +202,7 @@ class _LoginState extends State<Login> {
     }
   }
 
-  Future onPressedLogin() async {
+  Future onPressedSignUp() async {
     showDialog(
         context: context,
         barrierDismissible: false,
@@ -200,23 +212,22 @@ class _LoginState extends State<Login> {
               ),
             ));
     try {
-      final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      UserCredential userCredential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController!.text.trim(),
         password: passwordController!.text.trim(),
       );
-      navigatorKey.currentState!.popUntil((route) => route.isFirst);
-      // Navigator.push(
-      //     context, MaterialPageRoute(builder: (context) => AppContent()));
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        _showMaterialDialog('No user found for that email.');
-        print('No user found for that email.');
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
-        _showMaterialDialog('Wrong password provided for that user.');
+      if (e.code == 'weak-password') {
+        _showMaterialDialog('The password provided is too weak.');
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        _showMaterialDialog('The account already exists for that email.');
+        print('The account already exists for that email.');
       }
+    } catch (e) {
+      print(e);
     }
-
     // await FirebaseAuth.instance.signInWithEmailAndPassword(
     //     email: emailController!.text.trim(),
     //     password: passwordController!.text.trim());
@@ -243,7 +254,7 @@ class _LoginState extends State<Login> {
             actions: <Widget>[
               TextButton(
                 style: TextButton.styleFrom(
-                  primary: Color.fromARGB(255, 206, 202, 12),
+                  primary: Color.fromARGB(255, 58, 239, 255),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
@@ -261,7 +272,7 @@ class _LoginState extends State<Login> {
               ),
               TextButton(
                 style: TextButton.styleFrom(
-                  primary: Colors.grey,
+                  primary: Color.fromARGB(255, 149, 33, 33),
                 ),
                 onPressed: () {
                   Navigator.pop(context);
@@ -278,8 +289,8 @@ class _LoginState extends State<Login> {
         });
   }
 
-  signUpAccount() {
+  _gotoLogin() {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const SignUpScreen()));
+        context, MaterialPageRoute(builder: (context) => const Login()));
   }
 }

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobile_20_08/features/Home/HomeScreen.dart';
 import 'package:flutter_mobile_20_08/features/login/login.dart';
@@ -9,7 +11,11 @@ import '../common/horizontalScroll.dart';
 import '../common/theme.dart';
 import '../store/models/luxuryProduct.dart';
 import 'Home/demoSceen/scrollToIndex.dart';
+import 'products/cart.dart';
+import 'products/detailProductScreen.dart';
 import 'profile/profile.dart';
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -18,6 +24,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'My App Flutter',
       theme: ThemeData(),
       scrollBehavior: MyCustomScrollBehavior(),
@@ -25,9 +32,27 @@ class MyApp extends StatelessWidget {
       //   Locale('en', ''),
       //   Locale('vi', ''),
       // ],
-      home: const AppContent(),
+      // home: const AppContent(),
+      home: const MainPage(),
     );
   }
+}
+
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+          body: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return const AppContent();
+          } else {
+            return const Login();
+          }
+        },
+      ));
 }
 
 class AppContent extends StatefulWidget {
@@ -39,11 +64,33 @@ class AppContent extends StatefulWidget {
 
 class _AppContentState extends State<AppContent> {
   int selectedIndex = 0;
+  CollectionReference luxuryProductRef =
+      FirebaseFirestore.instance.collection('luxuryProduct');
+  List<LuxuryProduct> listLuxuryProduct = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _loadData();
+  }
+
+  _loadData() {
+    luxuryProductRef.get().then(
+      (QuerySnapshot querySnapshot) {
+        for (var element in querySnapshot.docs) {
+          LuxuryProduct product = LuxuryProduct.fromJson(element.data());
+          listLuxuryProduct.add(product);
+        }
+      },
+      onError: (e) => print("Error completing: $e"),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButton: renderFloatingBtnSearch(),
+      floatingActionButton: renderFloatingBtnSearch(),
       body: Container(
         decoration: BoxDecoration(
           color: primaryWhiteColor,
@@ -60,7 +107,7 @@ class _AppContentState extends State<AppContent> {
     } else if (selectedIndex == 1) {
       return renderSearch();
     } else if (selectedIndex == 2) {
-      return renderNotifications();
+      return renderCart();
     } else if (selectedIndex == 3) {
       return renderProfiles();
     }
@@ -68,12 +115,16 @@ class _AppContentState extends State<AppContent> {
 
   HomeScreen? homeScreen;
   Profile? profileScreen;
+  CartScreen? cartScreen;
   renderHomeContent() {
     homeScreen = const HomeScreen();
     return homeScreen;
   }
 
-  renderNotifications() {}
+  renderCart() {
+    cartScreen = const CartScreen();
+    return cartScreen;
+  }
 
   renderSearch() {}
 
@@ -84,7 +135,7 @@ class _AppContentState extends State<AppContent> {
 
   renderFloatingBtnSearch() {
     return FloatingActionButton(
-      hoverColor: primaryColor,
+      backgroundColor: primaryDarkColor,
       child: Container(child: Icon(Icons.search)),
       tooltip: 'Search products',
       onPressed: () {
@@ -198,34 +249,44 @@ class _AppContentState extends State<AppContent> {
         context: context,
         delegate: SearchPage<LuxuryProduct>(
           onQueryUpdate: print,
-          items: listLuxuryPerfumeProduct,
-          searchLabel: 'Tìm kiếm',
-
-          // searchStyle: TextStyle(),
+          items: listLuxuryProduct,
+          searchLabel: 'Search here',
+          barTheme: ThemeData(
+              hintColor: Colors.white54,
+              appBarTheme: AppBarTheme(
+                backgroundColor: primaryColor,
+              )),
+          searchStyle: TextStyle(
+            color: Colors.white,
+          ),
           suggestion: Center(
             // child: Text('Test'),
             child: ListView.builder(
-                itemCount: listLuxuryPerfumeProduct.length,
+                itemCount: listLuxuryProduct.length,
                 itemBuilder: (BuildContext context, int index) {
-                  final LuxuryProduct = listLuxuryPerfumeProduct[index];
+                  final luxuryProduct = listLuxuryProduct[index];
                   return ListTile(
+                    onTap: () {
+                      _gotoProductDetailScreen(luxuryProduct, context);
+                    },
                     selectedColor: primaryColor,
                     leading: Container(
                       height: 60,
                       width: 60,
                       decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
                           image: DecorationImage(
-                              image: AssetImage(LuxuryProduct.image),
+                              image: AssetImage(luxuryProduct.image),
                               fit: BoxFit.cover)),
                     ),
-                    title: Text(LuxuryProduct.name),
+                    title: Text(luxuryProduct.name),
                     subtitle: Text(
-                      LuxuryProduct.description,
+                      luxuryProduct.description,
                       textAlign: TextAlign.start,
-                      maxLines: 3,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    trailing: Text(LuxuryProduct.currentPrice.toString()),
+                    trailing: Text(luxuryProduct.currentPrice.toString()),
                     isThreeLine: true,
                   );
                 }),
@@ -239,28 +300,42 @@ class _AppContentState extends State<AppContent> {
             luxuryProduct.scent.toString(),
           ],
           // sort: (a, b) => a.compareTo(b),
-          builder: (LuxuryProduct) => Container(
+          builder: (luxuryProduct) => Container(
             child: ListTile(
+              onTap: () {
+                _gotoProductDetailScreen(luxuryProduct, context);
+              },
               selectedColor: primaryColor,
               leading: Container(
                   height: 60,
                   width: 60,
                   decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
                       image: DecorationImage(
-                          image: AssetImage(LuxuryProduct.image),
+                          image: AssetImage(luxuryProduct.image),
                           fit: BoxFit.cover))),
-              title: Text(LuxuryProduct.name),
+              title: Text(luxuryProduct.name),
               subtitle: Text(
-                LuxuryProduct.description,
+                luxuryProduct.description,
                 textAlign: TextAlign.start,
-                maxLines: 3,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
-              trailing: Text(LuxuryProduct.currentPrice.toString()),
+              trailing: Text(luxuryProduct.currentPrice.toString()),
               isThreeLine: true,
             ),
           ),
         ));
+  }
+
+  void _gotoProductDetailScreen(LuxuryProduct product, context) {
+    print("tapp");
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DetailProductScreen(
+                  luxuryProduct: product,
+                )));
   }
 }
 
@@ -273,28 +348,41 @@ class Product extends StatelessWidget {
       child: ListView.builder(
           itemCount: listLuxuryPerfumeProduct.length,
           itemBuilder: (BuildContext context, int index) {
-            final LuxuryProduct = listLuxuryPerfumeProduct[index];
+            final luxuryProduct = listLuxuryPerfumeProduct[index];
             return ListTile(
+              onTap: () {
+                _gotoProductDetailScreen(luxuryProduct, context);
+              },
               selectedColor: primaryColor,
               leading: Container(
                 height: 60,
                 width: 60,
                 decoration: BoxDecoration(
                     image: DecorationImage(
-                        image: AssetImage(LuxuryProduct.image),
+                        image: AssetImage(luxuryProduct.image),
                         fit: BoxFit.cover)),
               ),
-              title: Text(LuxuryProduct.name),
+              title: Text(luxuryProduct.name),
               subtitle: Text(
-                LuxuryProduct.description,
+                luxuryProduct.description,
                 textAlign: TextAlign.start,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
-              trailing: Text(LuxuryProduct.currentPrice.toString()),
+              trailing: Text(luxuryProduct.currentPrice.toString()),
               isThreeLine: true,
             );
           }),
     );
+  }
+
+  void _gotoProductDetailScreen(LuxuryProduct product, context) {
+    print("tapp");
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DetailProductScreen(
+                  luxuryProduct: product,
+                )));
   }
 }

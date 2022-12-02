@@ -1,4 +1,5 @@
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
@@ -26,8 +27,7 @@ class _ProfileState extends State<Profile> {
             IconButton(
                 icon: const Icon(Icons.logout_outlined, color: Colors.white),
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const Login()));
+                  FirebaseAuth.instance.signOut();
                 }),
           ],
         ),

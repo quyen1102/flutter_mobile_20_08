@@ -36,10 +36,8 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
   //           LuxuryProduct.fromJson(snapshots.data()!),
   //       toFirestore: (product,_) => product.toJson(),
   //     );
-        final luxuryProductRef = FirebaseFirestore.instance
-      .collection('luxuryProduct')
-      .doc();
-
+  final luxuryProductRef =
+      FirebaseFirestore.instance.collection('luxuryProduct').doc();
 
   @override
   void initState() {
@@ -57,9 +55,23 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
     rateStarEditingController = TextEditingController();
     quantityPurchasedEditingController = TextEditingController();
     numberCountProductEditingController = TextEditingController();
+    nameEditingController!.text = "Promio body lotion";
+    brandNameEditingController!.text = "SkinCeuticals";
+    imageEditingController!.text = "assets/images/product_01.jpg";
+    currentPriceEditingController!.text = "22.99";
+    lastPriceEditingController!.text = "99.99";
+    descriptionEditingController!.text =
+        "Retinol 0.5 from SkinCeuticals is a potent nighttime treatment that's powered by encapsulated retinol and botanical extracts. \n This retinol cream promotes cellular turnover to exfoliate skin and reduce the appearance of blemishes while soothing bisabolol helps alleviate irritation and inflammation.\nSkinCeuticals' H.A. Intensifier is a multi-beneficial corrective serum proven to amplify skin’s hyaluronic acid levels. This unique formulation contains a high concentration of pure hyaluronic acid, proxylane™, \nand botanical extracts of licorice root and purple rice to support skin’s hyaluronic\n acid levels and deliver surface hydration, helping improve the visible appearance of firmness, smoothness, and facial plumpness. \nThis hyaluronic acid serum may be used as part of a home skincare regimen after dermal fillers; \nalways consult with your physician for individual at-home advice.SkinCeuticals'";
+    useTypeEditingController!.text =
+        "Retinol 0.5 from SkinCeuticals is a potent nighttime treatment that's powered by encapsulated retinol and botanical extracts. \n This retinol cream promotes cellular turnover to exfoliate skin and reduce the appearance of blemishes while soothing bisabolol helps alleviate irritation and inflammation.\nSkinCeuticals' H.A. Intensifier is a multi-beneficial corrective serum proven to amplify skin’s hyaluronic acid levels. This unique formulation contains a high concentration of pure hyaluronic acid, proxylane™, \nand botanical extracts of licorice root and purple rice to support skin’s hyaluronic\n acid levels and deliver surface hydration, helping improve the visible appearance of firmness, smoothness, and facial plumpness. \nThis hyaluronic acid serum may be used as part of a home skincare regimen after dermal fillers; \nalways consult with your physician for individual at-home advice.SkinCeuticals'";
+    scentEditingController!.text = "connot";
+    liquidVolumeEditingController!.text = "122";
+    rateStarEditingController!.text = "5";
+    quantityPurchasedEditingController!.text = "3";
+    numberCountProductEditingController!.text = "0";
   }
 
-    @override
+  @override
   void dispose() {
     super.dispose();
     nameEditingController?.dispose();
@@ -309,9 +321,11 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
       scent: scentEditingController?.text as String,
       liquidVolume: int.parse(liquidVolumeEditingController?.text as String),
       rateStar: double.parse(rateStarEditingController?.text as String),
-      quantityPurchased: int.parse(quantityPurchasedEditingController?.text as String),
+      quantityPurchased:
+          int.parse(quantityPurchasedEditingController?.text as String),
       isLiked: (_isLike == isLiked.like) ? true : false,
-      numberCountProduct: int.parse(numberCountProductEditingController?.text as String),
+      numberCountProduct:
+          int.parse(numberCountProductEditingController?.text as String),
     );
     final json = luxuryProduct.toJson();
     // print(json.runtimeType);
@@ -324,9 +338,9 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
   //       .then((value) => print("Product Added"))
   //       .catchError((error) => print("Failed to add product: $error"));
   // }
-   Future createProduct({  luxuryProduct}) async {
+  Future createProduct({luxuryProduct}) async {
     return luxuryProductRef
-        . set(luxuryProduct.toJson(), SetOptions(merge: true) )
+        .set(luxuryProduct.toJson(), SetOptions(merge: true))
         .then((value) => print("Product Added"))
         .catchError((error) => print("Failed to add product: $error"));
   }

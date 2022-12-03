@@ -15,9 +15,6 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  String dropdownValue = 'Dog';
-  FocusNode searchFocusNode = FocusNode();
-  FocusNode textFieldFocusNode = FocusNode();
   @override
   Widget build(BuildContext context) {
     return Scaffold(

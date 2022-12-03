@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobile_20_08/common/theme.dart';
+import 'package:flutter_mobile_20_08/features/products/cart.dart';
 import 'package:flutter_mobile_20_08/store/models/luxuryProduct.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -68,9 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             padding: const EdgeInsets.only(right: 20.0),
-            icon: Icon(Icons.shopping_bag_outlined,
-                size: 26, color: primaryColor),
-            onPressed: null,
+            icon: Icon(Icons.shopping_bag_outlined, color: primaryColor),
+            onPressed: _gotoCartScreen,
           )
         ],
       ),
@@ -88,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 10),
               _renderRecentOrderList(),
               // _renderListItemRecentProduct(luxuryProduct),
-              const SizedBox(height: 1000),
+              const SizedBox(height: 80),
             ],
           ),
         ),
@@ -137,8 +137,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  _renderItemProductBanner(LuxuryProduct product){
-      Size size = MediaQuery.of(context).size;
+  _renderItemProductBanner(LuxuryProduct product) {
+    Size size = MediaQuery.of(context).size;
     double width = size.width;
     double height = size.height;
     return Padding(
@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       image: AssetImage(product.image), fit: BoxFit.cover),
                 ),
               ),
-             ],
+            ],
           ),
         ),
       ),
@@ -372,9 +372,21 @@ class _HomeScreenState extends State<HomeScreen> {
         width: MediaQuery.of(context).size.width,
         margin: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: primaryLightColor,
-          borderRadius: BorderRadius.circular(10),
-        ),
+            color: primaryLightColor,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                  blurRadius: 5,
+                  spreadRadius: 3,
+                  color: primaryColor.withOpacity(0.2),
+                  offset: const Offset(1, 1)),
+              const BoxShadow(
+                color: Colors.white,
+                offset: Offset(0.0, 0.0),
+                blurRadius: 0.0,
+                spreadRadius: 0.0,
+              ),
+            ]),
         child: Row(
           children: [
             Container(
@@ -499,7 +511,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _gotoProductDetailScreen(LuxuryProduct product) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => DetailProductScreen(luxuryProduct: product,)));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DetailProductScreen(
+                  luxuryProduct: product,
+                )));
+  }
+
+  void _gotoCartScreen() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const CartScreen()));
   }
 }

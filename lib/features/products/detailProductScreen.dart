@@ -10,6 +10,7 @@ import 'package:readmore/readmore.dart';
 import '../../common/theme.dart';
 import '../../store/data/products.dart';
 import '../../store/models/luxuryProduct.dart';
+import 'cart.dart';
 
 class DetailProductScreen extends StatefulWidget {
   const DetailProductScreen({Key? key, required this.luxuryProduct})
@@ -44,7 +45,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
   @override
   bool get wantKeepAlive => true;
 
-  _loadListData(){
+  _loadListData() {
     luxuryProductRef.get().then(
       (QuerySnapshot querySnapshot) {
         for (var element in querySnapshot.docs) {
@@ -214,16 +215,15 @@ class _DetailProductScreenState extends State<DetailProductScreen>
       leadingWidth: double.infinity,
       actions: [
         IconButton(
+            padding: const EdgeInsets.only(right: 20.0),
             icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-            onPressed: () {
-              Navigator.of(context).pop();
-            }),
+            onPressed: _gotoCartScreen),
       ],
       leading: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -497,7 +497,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
       ),
     );
   }
-  
+
   _renderItemProduct(LuxuryProduct product) {
     Size size = MediaQuery.of(context).size;
     double width = size.width;
@@ -680,5 +680,10 @@ class _DetailProductScreenState extends State<DetailProductScreen>
         _totalPrice = _initNumberProduct * product!.currentPrice;
       }
     });
+  }
+
+  void _gotoCartScreen() {
+    Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const CartScreen()));
   }
 }

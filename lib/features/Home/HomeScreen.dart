@@ -114,7 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
             enableInfiniteScroll: true,
             reverse: false,
             autoPlay: true,
-            autoPlayInterval: const Duration(seconds: 4),
+            autoPlayInterval: const Duration(seconds: 2),
             autoPlayAnimationDuration: const Duration(milliseconds: 500),
             autoPlayCurve: Curves.fastOutSlowIn,
             // enlargeCenterPage: true,
@@ -210,7 +210,7 @@ class _HomeScreenState extends State<HomeScreen> {
   _renderHotProductList() {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
           Row(
@@ -370,23 +370,24 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Container(
         height: 120,
         width: MediaQuery.of(context).size.width,
-        margin: const EdgeInsets.symmetric(vertical: 10),
+        margin: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-            color: primaryLightColor,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                  blurRadius: 5,
-                  spreadRadius: 3,
-                  color: primaryColor.withOpacity(0.2),
-                  offset: const Offset(1, 1)),
-              const BoxShadow(
-                color: Colors.white,
-                offset: Offset(0.0, 0.0),
-                blurRadius: 0.0,
-                spreadRadius: 0.0,
-              ),
-            ]),
+          color: primaryLightColor,
+          borderRadius: BorderRadius.circular(10),
+          // boxShadow: [
+          //   BoxShadow(
+          //       blurRadius: 5,
+          //       spreadRadius: 3,
+          //       color: Colors.black.withOpacity(0.2),
+          //       offset: const Offset(1, 1)),
+          //   const BoxShadow(
+          //     color: Colors.white,
+          //     offset: Offset(0.0, 0.0),
+          //     blurRadius: 0.0,
+          //     spreadRadius: 0.0,
+          //   ),
+          // ],
+        ),
         child: Row(
           children: [
             Container(
@@ -457,8 +458,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 });
                               },
                               child: Container(
+                                decoration: BoxDecoration(
+                                  color: primaryDarkerLightColor,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 10),
+                                    horizontal: 12, vertical: 10),
+                                margin:
+                                    const EdgeInsets.symmetric(vertical: 10),
                                 child: (luxuryProduct.isLiked)
                                     ? FaIcon(FontAwesomeIcons.solidHeart,
                                         color: Colors.red[800], size: 20)

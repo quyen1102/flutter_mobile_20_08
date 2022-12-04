@@ -143,7 +143,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 4.5,
     quantityPurchased: 2,
     isLiked: false,
-    numberCountProduct: 3,
+    numberCountProduct: 2,
   ),
   LuxuryProduct(
     id: "008",

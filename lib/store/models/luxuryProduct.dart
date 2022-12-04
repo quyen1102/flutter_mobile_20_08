@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 @immutable
 class LuxuryProduct {
   final String id;
@@ -76,12 +75,12 @@ class LuxuryProduct {
       image: json['image'] ?? "",
       currentPrice: json['currentPrice'] ?? 0 as double,
       lastPrice: json['lastPrice'] ?? 0 as double,
-      description: json['description'] ?? "" ,
+      description: json['description'] ?? "",
       useType: json['useType'] ?? "",
       scent: json['scent'] ?? "",
-      liquidVolume: json['liquidVolume'] ?? 0 ,
+      liquidVolume: json['liquidVolume'] ?? 0,
       rateStar: json['rateStar'] ?? 0 as double,
-      quantityPurchased: json['quantityPurchased'] ?? 0 ,
+      quantityPurchased: json['quantityPurchased'] ?? 0,
       isLiked: json['isLiked'] ?? false,
       numberCountProduct: json['numberCountProduct'] ?? "" as int,
     );

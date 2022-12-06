@@ -90,7 +90,7 @@ class _AppContentState extends State<AppContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: renderFloatingBtnSearch(),
+      // floatingActionButton: renderFloatingBtnSearch(),
       body: Container(
         decoration: BoxDecoration(
           color: primaryWhiteColor,

@@ -1,12 +1,15 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/theme.dart';
 import '../../store/data/products.dart';
 import '../../store/models/luxuryProduct.dart';
+import '../../store/provider/CartProvider.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -43,18 +46,36 @@ class _CartScreenState extends State<CartScreen> {
           ],
         ),
         actions: [
-          (numberSelected != 0)
-              ? InkWell(
-                  onTap: _onTapRemoveSelected,
-                  child: Container(
-                    height: 30,
-                    width: 100,
-                    alignment: Alignment.center,
-                    child: Text("(Remove $numberSelected)",
-                        style: TextStyle(color: Colors.redAccent)),
+          Badge(
+            badgeContent: Consumer<CartProvider>(
+              builder: (context, value, child) {
+                return Text(
+                  value.getCounter().toString(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
-                )
-              : Container()
+                );
+              },
+            ),
+            position: const BadgePosition(start: 30, bottom: 28),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const CartScreen()));
+              },
+              icon: Icon(
+                Icons.shopping_bag_outlined,
+                color: primaryDarkColor,
+                size: 25,
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 20.0,
+          ),
         ],
       ),
       body: Stack(
@@ -302,7 +323,7 @@ class _CartScreenState extends State<CartScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           _renderBtnHandleCount(_reduceProduct(product), "-"),
-          _renderViewNumberCount(product.numberCountProduct),
+          _renderViewNumberCount(product.quantity),
           _renderBtnHandleCount(_addProduct(product), "+"),
         ],
       ),

@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
 import '../../common/theme.dart';
+import '../../util/toast.dart';
 import '../login/login.dart';
 
 class Profile extends StatefulWidget {
@@ -25,6 +26,7 @@ class _ProfileState extends State<Profile> {
                 icon: const Icon(Icons.logout_outlined, color: Colors.white),
                 onPressed: () {
                   FirebaseAuth.instance.signOut();
+                  toast("See you soon");
                 }),
           ],
         ),

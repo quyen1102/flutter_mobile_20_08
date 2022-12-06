@@ -4,6 +4,7 @@ import 'package:flutter_mobile_20_08/features/App.dart';
 import 'package:flutter_mobile_20_08/features/Home/HomeScreen.dart';
 
 import '../../common/theme.dart';
+import '../../util/toast.dart';
 import 'signUp.dart';
 
 class Login extends StatefulWidget {
@@ -205,6 +206,7 @@ class _LoginState extends State<Login> {
         password: passwordController!.text.trim(),
       );
       navigatorKey.currentState!.popUntil((route) => route.isFirst);
+      toast("Welcome to my app!!!");
       // Navigator.push(
       //     context, MaterialPageRoute(builder: (context) => AppContent()));
     } on FirebaseAuthException catch (e) {

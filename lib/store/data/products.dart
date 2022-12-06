@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../models/luxuryProduct.dart';
 
 List<LuxuryProduct> listLuxuryPerfumeProduct = [
@@ -17,7 +19,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 2.5,
     quantityPurchased: 2,
     isLiked: false,
-    numberCountProduct: 3,
+    quantity: ValueNotifier(0),
   ),
   LuxuryProduct(
     id: "002",
@@ -35,7 +37,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 3.5,
     quantityPurchased: 2,
     isLiked: false,
-    numberCountProduct: 3,
+    quantity: ValueNotifier(0),
   ),
   LuxuryProduct(
     id: "003",
@@ -53,7 +55,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 4.5,
     quantityPurchased: 2,
     isLiked: false,
-    numberCountProduct: 3,
+    quantity: ValueNotifier(0),
   ),
   LuxuryProduct(
     id: "004",
@@ -71,7 +73,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 1.3,
     quantityPurchased: 2,
     isLiked: false,
-    numberCountProduct: 3,
+    quantity: ValueNotifier(0),
   ),
   LuxuryProduct(
     id: "005",
@@ -89,7 +91,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 5,
     quantityPurchased: 2,
     isLiked: false,
-    numberCountProduct: 3,
+    quantity: ValueNotifier(0),
   ),
   LuxuryProduct(
     id: "006",
@@ -107,7 +109,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 4.5,
     quantityPurchased: 2,
     isLiked: false,
-    numberCountProduct: 3,
+    quantity: ValueNotifier(0),
   ),
   LuxuryProduct(
     id: "007",
@@ -125,7 +127,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 4.5,
     quantityPurchased: 2,
     isLiked: false,
-    numberCountProduct: 3,
+    quantity: ValueNotifier(0),
   ),
   LuxuryProduct(
     id: "007",
@@ -143,7 +145,7 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 4.5,
     quantityPurchased: 2,
     isLiked: false,
-    numberCountProduct: 2,
+    quantity: ValueNotifier(0),
   ),
   LuxuryProduct(
     id: "008",
@@ -161,6 +163,6 @@ List<LuxuryProduct> listLuxuryPerfumeProduct = [
     rateStar: 4.5,
     quantityPurchased: 2,
     isLiked: false,
-    numberCountProduct: 3,
+    quantity: ValueNotifier(0),
   ),
 ];

@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -5,9 +6,12 @@ import 'package:flutter_mobile_20_08/common/theme.dart';
 import 'package:flutter_mobile_20_08/features/products/cart.dart';
 import 'package:flutter_mobile_20_08/store/models/luxuryProduct.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:search_page/search_page.dart';
 
 import '../../store/data/products.dart';
 import '../../store/models/listLuxuryProduct.dart';
+import '../../store/provider/CartProvider.dart';
 import '../products/detailProductScreen.dart';
 import 'DrawerApp.dart';
 
@@ -62,16 +66,32 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     // print("list product: ${listLuxuryProduct}");
     return Scaffold(
+      floatingActionButton: renderFloatingBtnSearch(),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
         iconTheme: IconThemeData(color: primaryColor),
         actions: [
-          IconButton(
-            padding: const EdgeInsets.only(right: 20.0),
-            icon: Icon(Icons.shopping_bag_outlined, color: primaryColor),
-            onPressed: _gotoCartScreen,
-          )
+          Badge(
+              badgeContent: Consumer<CartProvider>(
+                builder: (context, value, child) {
+                  return Text(
+                    value.getCounter().toString(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                },
+              ),
+              position: const BadgePosition(start: 30, bottom: 28),
+              child: IconButton(
+                icon: Icon(Icons.shopping_bag_outlined, color: primaryColor),
+                onPressed: _gotoCartScreen,
+              )),
+          const SizedBox(
+            width: 20.0,
+          ),
         ],
       ),
       drawer: const DrawerApp(),
@@ -145,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: InkWell(
         onTap: () {
-          _gotoProductDetailScreen(product);
+          _gotoProductDetailScreen(product, context);
         },
         child: SizedBox(
           height: 100,
@@ -167,6 +187,101 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  renderFloatingBtnSearch() {
+    return FloatingActionButton(
+      backgroundColor: primaryDarkColor,
+      child: Container(child: Icon(Icons.search)),
+      tooltip: 'Search products',
+      onPressed: () {
+        _searchAction();
+      },
+    );
+  }
+
+  _searchAction() {
+    showSearch(
+        context: context,
+        delegate: SearchPage<LuxuryProduct>(
+          onQueryUpdate: print,
+          items: listLuxuryProduct,
+          searchLabel: 'Search here',
+          barTheme: ThemeData(
+              hintColor: Colors.white54,
+              appBarTheme: AppBarTheme(
+                backgroundColor: primaryColor,
+              )),
+          searchStyle: TextStyle(
+            color: Colors.white,
+          ),
+          suggestion: Center(
+            // child: Text('Test'),
+            child: ListView.builder(
+                itemCount: listLuxuryProduct.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final luxuryProduct = listLuxuryProduct[index];
+                  return ListTile(
+                    onTap: () {
+                      _gotoProductDetailScreen(luxuryProduct, context);
+                    },
+                    selectedColor: primaryColor,
+                    leading: Container(
+                      height: 60,
+                      width: 60,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          image: DecorationImage(
+                              image: AssetImage(luxuryProduct.image),
+                              fit: BoxFit.cover)),
+                    ),
+                    title: Text(luxuryProduct.name),
+                    subtitle: Text(
+                      luxuryProduct.description,
+                      textAlign: TextAlign.start,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: Text(luxuryProduct.currentPrice.toString()),
+                    isThreeLine: true,
+                  );
+                }),
+          ),
+          failure: const Center(
+            child: Text('No product found :('),
+          ),
+          filter: (luxuryProduct) => [
+            luxuryProduct.name,
+            luxuryProduct.description,
+            luxuryProduct.scent.toString(),
+          ],
+          // sort: (a, b) => a.compareTo(b),
+          builder: (luxuryProduct) => Container(
+            child: ListTile(
+              onTap: () {
+                _gotoProductDetailScreen(luxuryProduct, context);
+              },
+              selectedColor: primaryColor,
+              leading: Container(
+                  height: 60,
+                  width: 60,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      image: DecorationImage(
+                          image: AssetImage(luxuryProduct.image),
+                          fit: BoxFit.cover))),
+              title: Text(luxuryProduct.name),
+              subtitle: Text(
+                luxuryProduct.description,
+                textAlign: TextAlign.start,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: Text(luxuryProduct.currentPrice.toString()),
+              isThreeLine: true,
+            ),
+          ),
+        ));
   }
 
   _renderListBtnFavorites() {
@@ -285,7 +400,7 @@ class _HomeScreenState extends State<HomeScreen> {
   _renderProductItem(LuxuryProduct product) {
     return InkWell(
       onTap: () {
-        _gotoProductDetailScreen(product);
+        _gotoProductDetailScreen(product, context);
       },
       child: Container(
         height: 300,
@@ -365,7 +480,7 @@ class _HomeScreenState extends State<HomeScreen> {
   _renderRecentProductItem(LuxuryProduct luxuryProduct) {
     return InkWell(
       onTap: () {
-        _gotoProductDetailScreen(luxuryProduct);
+        _gotoProductDetailScreen(luxuryProduct, context);
       },
       child: Container(
         height: 120,
@@ -517,7 +632,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _gotoProductDetailScreen(LuxuryProduct product) {
+  void _gotoProductDetailScreen(LuxuryProduct product, BuildContext context) {
     Navigator.push(
         context,
         MaterialPageRoute(

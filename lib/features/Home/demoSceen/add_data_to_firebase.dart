@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_mobile_20_08/util/toast.dart';
 
 import '../../../common/theme.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,7 +27,7 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
   TextEditingController? liquidVolumeEditingController;
   TextEditingController? rateStarEditingController;
   TextEditingController? quantityPurchasedEditingController;
-  TextEditingController? numberCountProductEditingController;
+  TextEditingController? quantityEditingController;
   isLiked _isLike = isLiked.like;
 
   // final luxuryProductRef = FirebaseFirestore.instance
@@ -54,7 +55,7 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
     liquidVolumeEditingController = TextEditingController();
     rateStarEditingController = TextEditingController();
     quantityPurchasedEditingController = TextEditingController();
-    numberCountProductEditingController = TextEditingController();
+    quantityEditingController = TextEditingController();
     nameEditingController!.text = "Promio body lotion";
     brandNameEditingController!.text = "SkinCeuticals";
     imageEditingController!.text = "assets/images/product_01.jpg";
@@ -68,7 +69,7 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
     liquidVolumeEditingController!.text = "122";
     rateStarEditingController!.text = "5";
     quantityPurchasedEditingController!.text = "3";
-    numberCountProductEditingController!.text = "0";
+    quantityEditingController!.text = "0";
   }
 
   @override
@@ -85,7 +86,7 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
     liquidVolumeEditingController?.dispose();
     rateStarEditingController?.dispose();
     quantityPurchasedEditingController?.dispose();
-    numberCountProductEditingController?.dispose();
+    quantityEditingController?.dispose();
   }
 
   @override
@@ -103,7 +104,7 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
 // rateStar
 // quantityPurchased
 // isLiked
-// numberCountProduct
+//quantity
     return Scaffold(
         backgroundColor: primaryLightColor,
         appBar: AppBar(
@@ -211,10 +212,10 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
                     enableSuggestions: false,
                     valid: null),
                 _renderTextInput(
-                    controller: numberCountProductEditingController,
+                    controller: quantityEditingController,
                     keyboardType: TextInputType.text,
                     autoCorrect: false,
-                    labelText: "numberCountProduct",
+                    labelText: "quantity",
                     obscureText: false,
                     enableSuggestions: false,
                     valid: null),
@@ -324,8 +325,8 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
       quantityPurchased:
           int.parse(quantityPurchasedEditingController?.text as String),
       isLiked: (_isLike == isLiked.like) ? true : false,
-      numberCountProduct:
-          int.parse(numberCountProductEditingController?.text as String),
+      // quantity: ValueNotifier(int.parse(0)),
+      quantity: ValueNotifier(int.parse(quantityEditingController!.text)),
     );
     final json = luxuryProduct.toJson();
     // print(json.runtimeType);
@@ -341,7 +342,7 @@ class _AddDataToFireBaseState extends State<AddDataToFireBase> {
   Future createProduct({luxuryProduct}) async {
     return luxuryProductRef
         .set(luxuryProduct.toJson(), SetOptions(merge: true))
-        .then((value) => print("Product Added"))
+        .then((value) => toast("Product Added"))
         .catchError((error) => print("Failed to add product: $error"));
   }
 }

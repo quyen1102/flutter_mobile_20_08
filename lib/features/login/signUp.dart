@@ -5,6 +5,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_mobile_20_08/features/login/login.dart';
 
 import '../../common/theme.dart';
+import '../../util/toast.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -217,6 +218,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
         email: emailController!.text.trim(),
         password: passwordController!.text.trim(),
       );
+      Navigator.pop(context);
+      setState(() {
+        emailController!.text = "";
+        passwordController!.text = "";
+        confirmPasswordController!.text = "";
+      });
+      toast("Created ${emailController!.text.trim()}");
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         _showMaterialDialog('The password provided is too weak.');

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 @immutable
-class LuxuryProduct {
+class LuxuryProduct with ChangeNotifier {
   final String id;
   final String name;
   final String brandName;
@@ -15,7 +15,7 @@ class LuxuryProduct {
   final double rateStar;
   final int quantityPurchased;
   late bool isLiked;
-  late int numberCountProduct;
+  final ValueNotifier<int>? quantity;
 
   LuxuryProduct({
     required this.id,
@@ -31,7 +31,7 @@ class LuxuryProduct {
     required this.rateStar,
     required this.quantityPurchased,
     required this.isLiked,
-    required this.numberCountProduct,
+    required this.quantity,
   });
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -47,7 +47,7 @@ class LuxuryProduct {
         "rateStar": rateStar,
         "quantityPurchased": quantityPurchased,
         "isLiked": isLiked,
-        "numberCountProduct": numberCountProduct,
+        "quantity": quantity!.value,
       };
   static LuxuryProduct fromJson(dynamic json) {
     if (json == null) {
@@ -65,7 +65,7 @@ class LuxuryProduct {
         rateStar: -1,
         quantityPurchased: -1,
         isLiked: false,
-        numberCountProduct: -1,
+        quantity: ValueNotifier(0),
       );
     }
     LuxuryProduct luxuryProduct = LuxuryProduct(
@@ -82,8 +82,18 @@ class LuxuryProduct {
       rateStar: json['rateStar'] ?? 0 as double,
       quantityPurchased: json['quantityPurchased'] ?? 0,
       isLiked: json['isLiked'] ?? false,
-      numberCountProduct: json['numberCountProduct'] ?? "" as int,
+      quantity: ValueNotifier(json['quantity'] as int),
     );
     return luxuryProduct;
+  }
+
+  void incrementQuantity() {
+    quantity?.value++;
+    notifyListeners();
+  }
+
+  void decrementQuantity() {
+    quantity?.value--;
+    notifyListeners();
   }
 }

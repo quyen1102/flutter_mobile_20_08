@@ -1,15 +1,19 @@
 import 'dart:ui';
 
+import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import '../../common/theme.dart';
 import '../../store/data/products.dart';
 import '../../store/models/luxuryProduct.dart';
+import '../../store/provider/CartProvider.dart';
+import '../../util/toast.dart';
 import 'cart.dart';
 
 class DetailProductScreen extends StatefulWidget {
@@ -24,22 +28,48 @@ class DetailProductScreen extends StatefulWidget {
 class _DetailProductScreenState extends State<DetailProductScreen>
     with AutomaticKeepAliveClientMixin {
   // get data from firebase
+  FirebaseFirestore db = FirebaseFirestore.instance;
   CollectionReference luxuryProductRef =
       FirebaseFirestore.instance.collection('luxuryProduct');
+  DocumentReference luxuryProductDocRef =
+      FirebaseFirestore.instance.collection('luxuryProduct').doc();
+  final cartProductRef =
+      FirebaseFirestore.instance.collection('cartProduct').doc();
   List<LuxuryProduct> listLuxuryProduct = [];
 
   double _totalPrice = 0;
   int _currentSliderIndex = 0;
   int _initNumberProduct = 0;
 
-  LuxuryProduct? product;
+  LuxuryProduct product = LuxuryProduct(
+    id: "",
+    name: "",
+    brandName: "",
+    image: "",
+    currentPrice: -1,
+    lastPrice: -1,
+    description: "",
+    useType: "",
+    scent: "",
+    liquidVolume: -1,
+    rateStar: -1,
+    quantityPurchased: -1,
+    isLiked: false,
+    quantity: ValueNotifier(0),
+  );
   var _futureGetData;
+  bool isLoading = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    setState(() {
+      isLoading = true;
+    });
     _loadListData();
-    _futureGetData = luxuryProductRef.doc(widget.luxuryProduct.id).get();
+    _loadData();
+
+    // _futureGetData = luxuryProductRef.doc(widget.luxuryProduct.id).get();
   }
 
   @override
@@ -51,19 +81,39 @@ class _DetailProductScreenState extends State<DetailProductScreen>
         for (var element in querySnapshot.docs) {
           LuxuryProduct product = LuxuryProduct.fromJson(element.data());
           listLuxuryProduct.add(product);
+          // setState(() {
+          //   isLoading = false;
+          // });
         }
       },
       onError: (e) => print("Error completing: $e"),
     );
   }
 
+  _loadData() {
+    final docRef = db.collection("luxuryProduct").doc(widget.luxuryProduct.id);
+    docRef.get().then(
+      (DocumentSnapshot doc) {
+        LuxuryProduct data = LuxuryProduct.fromJson(doc.data());
+        product = data;
+        setState(() {
+          isLoading = false;
+        });
+      },
+      onError: (e) => print("Error getting document: $e"),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Scaffold(
-      // body: _renderBodyCustomScrollView(product!),
-      body: _loadProductDetail(),
-      bottomNavigationBar: _renderBottomNavigationBar(),
+      body: (isLoading == true)
+          ? _renderLoading
+          : _renderBodyCustomScrollView(product),
+      // body: _loadProductDetail(),
+      bottomNavigationBar: _renderBottomNavigationBar(product),
     );
   }
 
@@ -83,27 +133,30 @@ class _DetailProductScreenState extends State<DetailProductScreen>
         if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic> data =
               snapshot.data!.data() as Map<String, dynamic>;
+
           product = LuxuryProduct.fromJson(data);
 
-          return _renderBodyCustomScrollView(product!);
+          return _renderBodyCustomScrollView(product);
           // return _renderLoading();
         }
 
-        return _renderLoading();
+        return _renderLoading;
       },
     );
   }
 
-  _renderLoading() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Center(
-          child: loading,
-        )
-      ],
-    );
-  }
+  Widget get _renderLoading => Container(
+        height: MediaQuery.of(context).size.height,
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+              child: loading,
+            )
+          ],
+        ),
+      );
 
   _renderDocDoseNotExits() {
     return Column(
@@ -157,7 +210,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
     duration: const Duration(milliseconds: 2000),
   );
 
-  _renderBottomNavigationBar() {
+  _renderBottomNavigationBar(product) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
       child: Row(
@@ -208,16 +261,42 @@ class _DetailProductScreenState extends State<DetailProductScreen>
     );
   }
 
-  _onPressAddToCart() {}
+  _onPressAddToCart() {
+    print("tap");
+    // final cart = Provider.of<CartProvider>(context);
+    // cartProductRef.set(product.toJson(), SetOptions(merge: true)).then((value) {
+    //   cart.addTotalPrice(product.currentPrice);
+    //   cart.addCounter();
+    //   toast("Product added to cart");
+    // }).catchError((error) => print("Failed to add product: $error"));
+  }
+
   _renderSliverAppBarr(size, product) {
     return SliverAppBar(
       pinned: true,
       leadingWidth: double.infinity,
       actions: [
-        IconButton(
-            padding: const EdgeInsets.only(right: 20.0),
-            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-            onPressed: _gotoCartScreen),
+        Badge(
+          badgeContent: Consumer<CartProvider>(
+            builder: (context, value, child) {
+              return Text(
+                value.getCounter().toString(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            },
+          ),
+          position: const BadgePosition(start: 30, bottom: 28),
+          child: IconButton(
+              icon:
+                  const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+              onPressed: _gotoCartScreen),
+        ),
+        const SizedBox(
+          width: 20.0,
+        ),
       ],
       leading: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -633,7 +712,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
       width: 50,
       height: 20,
       alignment: Alignment.center,
-      child: Text(_initNumberProduct.toString(),
+      child: Text(product.quantity!.value.toString(),
           style: const TextStyle(
             fontSize: 18,
             color: Colors.black,
@@ -666,18 +745,18 @@ class _DetailProductScreenState extends State<DetailProductScreen>
 
   _addProduct() {
     setState(() {
-      if (_initNumberProduct < 10) {
-        _initNumberProduct++;
-        _totalPrice = _initNumberProduct * product!.currentPrice;
+      if (product.quantity!.value < 10) {
+        product.incrementQuantity();
+        _totalPrice = product.quantity!.value * product.currentPrice;
       }
     });
   }
 
   _reduceProduct() {
     setState(() {
-      if (_initNumberProduct > 0) {
-        _initNumberProduct--;
-        _totalPrice = _initNumberProduct * product!.currentPrice;
+      if (product.quantity!.value > 0) {
+        product.decrementQuantity();
+        _totalPrice = product.quantity!.value * product.currentPrice;
       }
     });
   }

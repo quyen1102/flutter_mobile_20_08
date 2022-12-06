@@ -20,10 +20,12 @@ class CartProvider with ChangeNotifier {
   List<LuxuryProduct> getCartList() {
     cartProductRef.get().then(
       (QuerySnapshot querySnapshot) {
+        List<LuxuryProduct> listData = [];
         for (var element in querySnapshot.docs) {
           LuxuryProduct product = LuxuryProduct.fromJson(element.data());
-          cartList.add(product);
+          listData.add(product);
         }
+        cartList = listData;
       },
       onError: (e) => print("Error completing: $e"),
     );
@@ -33,6 +35,11 @@ class CartProvider with ChangeNotifier {
 
   void addCounter() {
     _counter++;
+    notifyListeners();
+  }
+
+  void reloadCounter(int counterUpdate) {
+    _counter = counterUpdate;
     notifyListeners();
   }
 

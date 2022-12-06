@@ -108,12 +108,13 @@ class _DetailProductScreenState extends State<DetailProductScreen>
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
 
+    // final cart = Provider.of<CartProvider>(context);
     return Scaffold(
       body: (isLoading == true)
           ? _renderLoading
-          : _renderBodyCustomScrollView(product),
+          : _renderBodyCustomScrollView(product, context),
       // body: _loadProductDetail(),
-      bottomNavigationBar: _renderBottomNavigationBar(product),
+      bottomNavigationBar: _renderBottomNavigationBar(product, context),
     );
   }
 
@@ -136,7 +137,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
 
           product = LuxuryProduct.fromJson(data);
 
-          return _renderBodyCustomScrollView(product);
+          return _renderBodyCustomScrollView(product, context);
           // return _renderLoading();
         }
 
@@ -192,7 +193,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
     );
   }
 
-  _renderBodyCustomScrollView(LuxuryProduct product) {
+  _renderBodyCustomScrollView(LuxuryProduct product, context) {
     Size size = MediaQuery.of(context).size;
     return CustomScrollView(
       slivers: [
@@ -210,7 +211,7 @@ class _DetailProductScreenState extends State<DetailProductScreen>
     duration: const Duration(milliseconds: 2000),
   );
 
-  _renderBottomNavigationBar(product) {
+  _renderBottomNavigationBar(product, context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
       child: Row(
@@ -236,7 +237,9 @@ class _DetailProductScreenState extends State<DetailProductScreen>
             ),
           ),
           ElevatedButton.icon(
-            onPressed: _onPressAddToCart,
+            onPressed: () {
+              _onPressAddToCart(context);
+            },
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 26),
               primary: primaryColor,
@@ -261,14 +264,16 @@ class _DetailProductScreenState extends State<DetailProductScreen>
     );
   }
 
-  _onPressAddToCart() {
-    print("tap");
-    // final cart = Provider.of<CartProvider>(context);
-    // cartProductRef.set(product.toJson(), SetOptions(merge: true)).then((value) {
-    //   cart.addTotalPrice(product.currentPrice);
-    //   cart.addCounter();
-    //   toast("Product added to cart");
-    // }).catchError((error) => print("Failed to add product: $error"));
+  Future _onPressAddToCart(BuildContext context) async {
+    print("tap: ${product.brandName}");
+
+    return cartProductRef
+        .set(product.toJson(), SetOptions(merge: true))
+        .then((value) {
+      toast("Added product to cart");
+      context.read<CartProvider>().addCounter();
+      print("dataaa: ${context.read<CartProvider>().counter}");
+    }).catchError((error) => print("Failed to add product: $error"));
   }
 
   _renderSliverAppBarr(size, product) {

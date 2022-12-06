@@ -19,12 +19,30 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  List<LuxuryProduct> listProducts = listLuxuryPerfumeProduct;
+  List<LuxuryProduct> listProducts = [];
   int numberSelected = 0;
   int _initNumberProduct = 0;
   double _totalPrice = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    var list = context.read<CartProvider>().getCartList();
+
+    context.read<CartProvider>().reloadCounter(list.length);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final cart = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -176,14 +194,29 @@ class _CartScreenState extends State<CartScreen> {
   shareItem() {}
 
   Widget _renderListProduct() {
-    return ListView.builder(
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: listProducts.length,
-        itemBuilder: (BuildContext context, int index) {
-          final luxuryProduct = listLuxuryPerfumeProduct[index];
-          return _renderItemListProduct(luxuryProduct);
-        });
+    return Consumer<CartProvider>(
+      builder: (BuildContext context, provider, widget) {
+        listProducts = provider.cartList;
+        if (provider.cartList.isEmpty) {
+          return const Center(
+            child: Text(
+              'Your Cart is Empty',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+            ),
+          );
+        } else {
+          return ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: listProducts.length,
+            itemBuilder: (BuildContext context, int index) {
+              final luxuryProduct = listProducts[index];
+              return _renderItemListProduct(luxuryProduct);
+            },
+          );
+        }
+      },
+    );
   }
 
   bool isChecked = false;
@@ -220,21 +253,21 @@ class _CartScreenState extends State<CartScreen> {
       height: 140,
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20),
-      child: Row(children: [
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        // Container(
+        //     child: Checkbox(
+        //   checkColor: Colors.white,
+        //   materialTapTargetSize: MaterialTapTargetSize.padded,
+        //   fillColor: MaterialStateProperty.resolveWith(getColor),
+        //   value: isChecked,
+        //   onChanged: (bool? value) {
+        //     setState(() {
+        //       isChecked = value!;
+        //     });
+        //   },
+        // )),
         Container(
-            child: Checkbox(
-          checkColor: Colors.white,
-          materialTapTargetSize: MaterialTapTargetSize.padded,
-          fillColor: MaterialStateProperty.resolveWith(getColor),
-          value: isChecked,
-          onChanged: (bool? value) {
-            setState(() {
-              isChecked = value!;
-            });
-          },
-        )),
-        Container(
-          width: MediaQuery.of(context).size.width * 0.75,
+          width: MediaQuery.of(context).size.width * 0.85,
           decoration: BoxDecoration(
             color: Color(0xffece2dc),
             borderRadius: BorderRadius.circular(10),
@@ -323,7 +356,7 @@ class _CartScreenState extends State<CartScreen> {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           _renderBtnHandleCount(_reduceProduct(product), "-"),
-          _renderViewNumberCount(product.quantity),
+          _renderViewNumberCount(product.quantity!.value),
           _renderBtnHandleCount(_addProduct(product), "+"),
         ],
       ),

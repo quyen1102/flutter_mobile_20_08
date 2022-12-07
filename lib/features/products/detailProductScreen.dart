@@ -10,6 +10,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:readmore/readmore.dart';
 import '../../common/theme.dart';
+import '../../store/api/api.dart';
 import '../../store/data/products.dart';
 import '../../store/models/luxuryProduct.dart';
 import '../../store/provider/CartProvider.dart';
@@ -59,6 +60,15 @@ class _DetailProductScreenState extends State<DetailProductScreen>
   );
   var _futureGetData;
   bool isLoading = false;
+
+  setUpData() async {
+    var cart = Provider.of<CartProvider>(context, listen: false);
+    List<LuxuryProduct> list = await getCartFB();
+    cart.changeListCart(list);
+
+    cart.changeCounterCart(list.length);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -265,14 +275,28 @@ class _DetailProductScreenState extends State<DetailProductScreen>
   }
 
   Future _onPressAddToCart(BuildContext context) async {
-    print("tap: ${product.brandName}");
-
+    LuxuryProduct luxuryProduct = LuxuryProduct(
+      id: cartProductRef.id,
+      name: product.name,
+      brandName: product.brandName,
+      image: product.image,
+      currentPrice: product.currentPrice,
+      lastPrice: product.lastPrice,
+      description: product.description,
+      useType: product.useType,
+      scent: product.scent,
+      liquidVolume: product.liquidVolume,
+      rateStar: product.rateStar,
+      quantityPurchased: product.quantityPurchased,
+      isLiked: product.isLiked,
+      quantity: product.quantity,
+    );
     return cartProductRef
-        .set(product.toJson(), SetOptions(merge: true))
+        .set(luxuryProduct.toJson(), SetOptions(merge: true))
         .then((value) {
       toast("Added product to cart");
-      context.read<CartProvider>().addCounter();
-      print("dataaa: ${context.read<CartProvider>().counter}");
+      // context.read<CartProvider>().addCounter();
+      setUpData();
     }).catchError((error) => print("Failed to add product: $error"));
   }
 

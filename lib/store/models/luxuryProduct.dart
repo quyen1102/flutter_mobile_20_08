@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 @immutable
 class LuxuryProduct with ChangeNotifier {
-  final String id;
+  late final String id;
   final String name;
   final String brandName;
   final String image;
@@ -94,6 +94,11 @@ class LuxuryProduct with ChangeNotifier {
 
   void decrementQuantity() {
     quantity?.value--;
+    notifyListeners();
+  }
+
+  void setId(String newId) {
+    id = newId;
     notifyListeners();
   }
 }

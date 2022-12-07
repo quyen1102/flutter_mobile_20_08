@@ -17,6 +17,11 @@ class CartProvider with ChangeNotifier {
   double get totalPrice => _totalPrice;
 
   List<LuxuryProduct> cartList = [];
+  changeListCart(List<LuxuryProduct> cartListNew) {
+    cartList = cartListNew;
+    notifyListeners();
+  }
+
   List<LuxuryProduct> getCartList() {
     cartProductRef.get().then(
       (QuerySnapshot querySnapshot) {
@@ -38,7 +43,7 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void reloadCounter(int counterUpdate) {
+  void changeCounterCart(int counterUpdate) {
     _counter = counterUpdate;
     notifyListeners();
   }

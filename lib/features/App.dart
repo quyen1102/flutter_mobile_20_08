@@ -11,8 +11,10 @@ import '../common/horizontalScroll.dart';
 import '../common/theme.dart';
 import '../store/models/luxuryProduct.dart';
 import 'Home/demoSceen/scrollToIndex.dart';
+import 'QRCode/qrcode.dart';
 import 'products/cart.dart';
 import 'products/detailProductScreen.dart';
+import 'products/listProduct.dart';
 import 'profile/profile.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -105,9 +107,9 @@ class _AppContentState extends State<AppContent> {
     if (selectedIndex == 0) {
       return renderHomeContent();
     } else if (selectedIndex == 1) {
-      return renderSearch();
+      return renderListProduct();
     } else if (selectedIndex == 2) {
-      return renderCart();
+      return renderQRCode();
     } else if (selectedIndex == 3) {
       return renderProfiles();
     }
@@ -116,17 +118,20 @@ class _AppContentState extends State<AppContent> {
   HomeScreen? homeScreen;
   Profile? profileScreen;
   CartScreen? cartScreen;
+  ListProductScreen? listProductScreen;
   renderHomeContent() {
     homeScreen = const HomeScreen();
     return homeScreen;
   }
 
-  renderCart() {
-    cartScreen = const CartScreen();
-    return cartScreen;
+  renderQRCode() {
+    return const QRCodeScreen();
   }
 
-  renderSearch() {}
+  renderListProduct() {
+    listProductScreen = const ListProductScreen();
+    return listProductScreen;
+  }
 
   renderProfiles() {
     profileScreen = const Profile();
@@ -166,19 +171,19 @@ class _AppContentState extends State<AppContent> {
           ),
           _renderBarButton(
             1,
-            'Search',
-            FaIcon(FontAwesomeIcons.magnifyingGlass,
+            'list product',
+            FaIcon(FontAwesomeIcons.solidRectangleList,
                 color: colorOrigin, size: 24),
-            FaIcon(FontAwesomeIcons.magnifyingGlass,
+            FaIcon(FontAwesomeIcons.solidRectangleList,
                 color: colorActive, size: 26),
           ),
           _renderBarButton(
             2,
-            'cart',
+            'QR Code',
             // Icon(Icons.shopping_bag_outlined,color: colorOrigin, size: 24 ),
             // Icon(Icons.shopping_bag_outlined,color: colorActive, size: 26 ),
-            FaIcon(FontAwesomeIcons.bagShopping, color: colorOrigin, size: 24),
-            FaIcon(FontAwesomeIcons.bagShopping, color: colorActive, size: 26),
+            FaIcon(FontAwesomeIcons.qrcode, color: colorOrigin, size: 24),
+            FaIcon(FontAwesomeIcons.qrcode, color: colorActive, size: 26),
           ),
           _renderBarButton(
             3,

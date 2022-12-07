@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobile_20_08/common/theme.dart';
 import 'package:flutter_mobile_20_08/features/products/cart.dart';
 import 'package:flutter_mobile_20_08/store/models/luxuryProduct.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:search_page/search_page.dart';
 
+import '../../store/api/api.dart';
 import '../../store/data/products.dart';
 import '../../store/models/listLuxuryProduct.dart';
 import '../../store/provider/CartProvider.dart';
@@ -27,24 +29,28 @@ class _HomeScreenState extends State<HomeScreen> {
   CollectionReference luxuryProductRef =
       FirebaseFirestore.instance.collection('luxuryProduct');
   List<LuxuryProduct> listLuxuryProduct = [];
+  List<LuxuryProduct> listProducts = [];
 
+  bool isLoading = true;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    // var list = context.read<CartProvider>().getCartList();
+
+    // context.read<CartProvider>().reloadCounter(list.length);
     _loadData();
   }
 
-  _loadData() {
-    luxuryProductRef.get().then(
-      (QuerySnapshot querySnapshot) {
-        for (var element in querySnapshot.docs) {
-          LuxuryProduct product = LuxuryProduct.fromJson(element.data());
-          listLuxuryProduct.add(product);
-        }
-      },
-      onError: (e) => print("Error completing: $e"),
-    );
+  Future _loadData() async {
+    var cart = Provider.of<CartProvider>(context, listen: false);
+    listProducts = await getCartListFB();
+    listLuxuryProduct = await getLuxuryListFB();
+    cart.changeListCart(listProducts);
+    cart.changeCounterCart(listProducts.length);
+    setState(() {
+      isLoading = false;
+    });
   }
 
   final List<String> listFavorites = <String>[
@@ -95,24 +101,33 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       drawer: const DrawerApp(),
-      body: Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _renderListBtnFavorites(),
-              _renderCarouselSlider(context),
-              _renderHotProductList(),
-              const SizedBox(height: 10),
-              _renderRecentOrderList(),
-              // _renderListItemRecentProduct(luxuryProduct),
-              const SizedBox(height: 80),
-            ],
-          ),
-        ),
-      ),
+      body: (isLoading)
+          ? SpinKitFadingCircle(
+              color: primaryOrangeColor,
+              size: 50.0,
+              duration: const Duration(milliseconds: 2000),
+            )
+          : RefreshIndicator(
+              onRefresh: () => _loadData(),
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _renderListBtnFavorites(),
+                      _renderCarouselSlider(context),
+                      _renderHotProductList(),
+                      const SizedBox(height: 10),
+                      _renderRecentOrderList(),
+                      // _renderListItemRecentProduct(luxuryProduct),
+                      const SizedBox(height: 80),
+                    ],
+                  ),
+                ),
+              ),
+            ),
     );
   }
 
@@ -567,9 +582,35 @@ class _HomeScreenState extends State<HomeScreen> {
                               onTap: () {
                                 // print(luxuryProduct.isLiked);
                                 setState(() {
-                                  (luxuryProduct.isLiked)
-                                      ? (luxuryProduct.isLiked = false)
-                                      : (luxuryProduct.isLiked = true);
+                                  if (luxuryProduct.isLiked) {
+                                    luxuryProduct.isLiked = false;
+                                    updateOneField(
+                                        id: luxuryProduct.id,
+                                        dataUpdate: {
+                                          'isLiked': false,
+                                        });
+                                  } else {
+                                    luxuryProduct.isLiked = true;
+                                    updateOneField(
+                                        id: luxuryProduct.id,
+                                        dataUpdate: {
+                                          'isLiked': true,
+                                        });
+                                  }
+                                  // (luxuryProduct.isLiked)
+                                  //     ? (luxuryProduct.isLiked = false,)
+                                  //     : (luxuryProduct.isLiked = true);
+                                  // (luxuryProduct.isLiked)
+                                  //     ? (updateOneField(
+                                  //         id: luxuryProduct.id,
+                                  //         dataUpdate: {
+                                  //             'isLiked': false,
+                                  //           }))
+                                  //     : (updateOneField(
+                                  //         id: luxuryProduct.id,
+                                  //         dataUpdate: {
+                                  //             'isLiked': true,
+                                  //           }));
                                 });
                               },
                               child: Container(

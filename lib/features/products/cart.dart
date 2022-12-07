@@ -2,10 +2,14 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_mobile_20_08/store/api/api.dart';
+import 'package:flutter_mobile_20_08/util/toast.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../../common/component.dart';
 import '../../common/theme.dart';
 import '../../store/data/products.dart';
 import '../../store/models/luxuryProduct.dart';
@@ -19,18 +23,34 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  List<LuxuryProduct> listProducts = [];
   int numberSelected = 0;
   int _initNumberProduct = 0;
   double _totalPrice = 0;
 
+  bool isLoading = true;
+
+  setUpData() async {
+    var cart = Provider.of<CartProvider>(context, listen: false);
+    List<LuxuryProduct> list = await getCartFB();
+    cart.changeListCart(list);
+
+    cart.changeCounterCart(list.length);
+  }
+
+  void callData() async {
+    await setUpData();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   void initState() {
-    // TODO: implement initState
-    var list = context.read<CartProvider>().getCartList();
-
-    context.read<CartProvider>().reloadCounter(list.length);
     super.initState();
+    setState(() {
+      isLoading = true;
+    });
+    callData();
   }
 
   @override
@@ -42,140 +62,158 @@ class _CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        title: Text(
-          "My Cart",
-          style: TextStyle(color: primaryDarkColor),
-        ),
-        centerTitle: true,
-        leading: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back_ios, color: primaryDarkColor),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ),
-        actions: [
-          Badge(
-            badgeContent: Consumer<CartProvider>(
-              builder: (context, value, child) {
-                return Text(
-                  value.getCounter().toString(),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              },
-            ),
-            position: const BadgePosition(start: 30, bottom: 28),
-            child: IconButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CartScreen()));
-              },
-              icon: Icon(
-                Icons.shopping_bag_outlined,
-                color: primaryDarkColor,
-                size: 25,
-              ),
-            ),
+    return Consumer<CartProvider>(
+        builder: (BuildContext context, cartProvider, widget) {
+      return Scaffold(
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.white,
+          title: Text(
+            "My Cart",
+            style: TextStyle(color: primaryDarkColor),
           ),
-          const SizedBox(
-            width: 20.0,
-          ),
-        ],
-      ),
-      body: Stack(
-        children: [
-          Positioned(
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
+          centerTitle: true,
+          leading: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back_ios, color: primaryDarkColor),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
               ),
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _renderListProduct(),
-                    _renderInputPromoCode(),
-                    const SizedBox(
-                      height: 300,
-                    )
-                  ],
+            ],
+          ),
+          actions: [
+            Badge(
+              badgeContent: Text(
+                cartProvider.getCounter().toString(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              position: const BadgePosition(start: 30, bottom: 28),
+              child: IconButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CartScreen()));
+                },
+                icon: Icon(
+                  Icons.shopping_bag_outlined,
+                  color: primaryDarkColor,
+                  size: 25,
                 ),
               ),
             ),
-          ),
-          // Positioned(
-          //   top: 0,
-          //   right: 0,
-          //   child: Container(
-          //     decoration: BoxDecoration(
-          //       color: Colors.blue,
-          //     ),
-          //     height: 60,
-          //     width: MediaQuery.of(context).size.width,
-          //     child: Row(
-          //       children: [
-          //         Container(
-          //           height: 60,
-          //           width: 30,
-          //           decoration: BoxDecoration(
-          //             color: Colors.red,
-          //           ),
-          //         ),
-          //         Container(
-          //           height: 60,
-          //           width: 30,
-          //           decoration: BoxDecoration(
-          //             color: Colors.red,
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ),
-          // ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+            const SizedBox(
+              width: 20.0,
+            ),
+          ],
+        ),
+        body: (isLoading)
+            ? loading
+            : Stack(
                 children: [
-                  Container(
-                    alignment: Alignment.center,
-                    height: 70,
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    margin: const EdgeInsets.symmetric(
-                        vertical: 30, horizontal: 20),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        colors: [primaryColor, primarySuperDarkColor],
+                  Positioned(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
                       ),
-                      borderRadius: BorderRadius.circular(50),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            _renderListProduct(cartProvider.cartList),
+                            _renderInputPromoCode(),
+                            const SizedBox(
+                              height: 300,
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Positioned(
+                  //   top: 0,
+                  //   right: 0,
+                  //   child: Container(
+                  //     decoration: BoxDecoration(
+                  //       color: Colors.blue,
+                  //     ),
+                  //     height: 60,
+                  //     width: MediaQuery.of(context).size.width,
+                  //     child: Row(
+                  //       children: [
+                  //         Container(
+                  //           height: 60,
+                  //           width: 30,
+                  //           decoration: BoxDecoration(
+                  //             color: Colors.red,
+                  //           ),
+                  //         ),
+                  //         Container(
+                  //           height: 60,
+                  //           width: 30,
+                  //           decoration: BoxDecoration(
+                  //             color: Colors.red,
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          InkWell(
+                            onTap: _onTapCheckOut(),
+                            child: Container(
+                                alignment: Alignment.center,
+                                height: 70,
+                                width: MediaQuery.of(context).size.width * 0.8,
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 30, horizontal: 20),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topRight,
+                                    end: Alignment.bottomLeft,
+                                    colors: [
+                                      primaryColor,
+                                      primarySuperDarkColor
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Text(
+                                  "Check Out",
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    color: Colors.white,
+                                  ),
+                                )),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-          ),
-        ],
-      ),
-    );
+      );
+    });
   }
+
+  SpinKitFadingCircle loading = SpinKitFadingCircle(
+    color: primaryOrangeColor,
+    size: 50.0,
+    duration: const Duration(milliseconds: 2000),
+  );
 
   Color getColor(Set<MaterialState> states) {
     const Set<MaterialState> interactiveStates = <MaterialState>{
@@ -189,34 +227,37 @@ class _CartScreenState extends State<CartScreen> {
     return Colors.red;
   }
 
-  deleteItem() {}
+  deleteItem(LuxuryProduct product) async {
+    print("product: id: ${product.id}");
+    if (await deleteProduct(product.id)) {
+      toast("Delete successfully!!");
+      setUpData();
+    } else {
+      toast("Delete fail!!");
+    }
+  }
 
   shareItem() {}
 
-  Widget _renderListProduct() {
-    return Consumer<CartProvider>(
-      builder: (BuildContext context, provider, widget) {
-        listProducts = provider.cartList;
-        if (provider.cartList.isEmpty) {
-          return const Center(
-            child: Text(
-              'Your Cart is Empty',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
-            ),
-          );
-        } else {
-          return ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: listProducts.length,
-            itemBuilder: (BuildContext context, int index) {
-              final luxuryProduct = listProducts[index];
-              return _renderItemListProduct(luxuryProduct);
-            },
-          );
-        }
-      },
-    );
+  Widget _renderListProduct(List<LuxuryProduct> list) {
+    if (list.isEmpty) {
+      return const Center(
+        child: Text(
+          'Your Cart is Empty',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18.0),
+        ),
+      );
+    } else {
+      return ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: list.length,
+        itemBuilder: (BuildContext context, int index) {
+          final luxuryProduct = list[index];
+          return _renderItemListProduct(luxuryProduct);
+        },
+      );
+    }
   }
 
   bool isChecked = false;
@@ -228,7 +269,9 @@ class _CartScreenState extends State<CartScreen> {
         children: [
           SlidableAction(
             flex: 3,
-            onPressed: deleteItem(),
+            onPressed: (context) {
+              deleteItem(luxuryProduct);
+            },
             backgroundColor: Colors.red,
             foregroundColor: Colors.white,
             icon: FontAwesomeIcons.trashCan,
@@ -435,7 +478,7 @@ class _CartScreenState extends State<CartScreen> {
             Container(
               height: 30,
               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-              width: MediaQuery.of(context).size.width * 0.45,
+              width: MediaQuery.of(context).size.width * 0.4,
               child: TextField(
                 maxLines: 1,
                 cursorColor: primaryOrangeColor,
@@ -477,4 +520,6 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void submitPromoCode() {}
+
+  _onTapCheckOut() {}
 }

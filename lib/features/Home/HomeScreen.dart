@@ -347,17 +347,17 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _renderTitle("Popular"),
-              Container(
-                alignment: Alignment.bottomCenter,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text(
-                  'See all',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: primaryColor,
-                  ),
-                ),
-              )
+              // Container(
+              //   alignment: Alignment.bottomCenter,
+              //   padding: const EdgeInsets.symmetric(vertical: 16),
+              //   child: Text(
+              //     'See all',
+              //     style: TextStyle(
+              //       fontSize: 13,
+              //       color: primaryColor,
+              //     ),
+              //   ),
+              // )
             ],
           ),
           _renderListItemHotProduct(listLuxuryProduct),
